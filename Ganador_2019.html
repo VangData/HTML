@@ -107,7 +107,7 @@ map.on('load', function () {
 
 map.addSource("resultados", {
     type: 'vector',
-    url: 'mapbox://laur05.2h5boet1',
+    url: 'mapbox://laur05.cias9tph',
 });
 
 var layers = map.getStyle().layers;
@@ -118,21 +118,21 @@ map.addLayer({
 'type': 'fill',
 'renderingMode': '2d',
 'source': 'resultados',
-'source-layer': 'elecciones_2019_ganador-7jebap',
+'source-layer': 'elecciones_2019_siusplau_1-a6ddwh',
 'paint': {
-'fill-color': ["match", ["get","pganador"],
+'fill-color': ["match", ["get","un"],
         "PSOE", "#f20000",
         "PP", "#3dc8ff",
-        "Navarra Suma", "#3dc8ff",
+        "NPALUS", "#3dc8ff",
         "Podemos", "#a50e6b",
         "Cs", "#f78700",
         "CDC", "#172d84",
         "ERC", "#ffdd00",
         "PNV", "#008e26",
         "Otros", "#d6d6d6",
-        "EH BILDU", "#8e8c01",
-        "JxCAT", "#1a4384",
-        "Vox", "#b5d800",
+        "BILDU", "#8e8c01",
+        "JXCAt", "#1a4384",
+        "VOX", "#b5d800",
         "#40A5A4"],
 'fill-opacity': ["interpolate", ["linear", 100], ["get", "right_p_ganador"],
         0.00, 0.05,
@@ -148,7 +148,7 @@ map.addLayer({
 'type': 'line',
 'renderingMode': '2d',
 'source': 'resultados',
-'source-layer': 'elecciones_2019_ganador-7jebap',
+'source-layer': 'elecciones_2019_siusplau_1-a6ddwh',
 'paint': {
 'line-color': "white",
         "line-width":  0.1}
@@ -185,27 +185,27 @@ var popup = new mapboxgl.Popup({
     if (e.features.length > 0) {
           if (hoveredStateId) {          
             map.setFeatureState({ source: 'resultados', 
-                                  sourceLayer: 'elecciones_2019_ganador-7jebap',
+                                  sourceLayer: 'elecciones_2019_siusplau_1-a6ddwh',
                                   id: hoveredStateId}, { hover: false});
           }
           hoveredStateId = e.features[0].id;
           map.setFeatureState({ source: 'resultados', 
-                              sourceLayer: 'elecciones_2019_ganador-7jebap',
+                              sourceLayer: 'elecciones_2019_siusplau_1-a6ddwh',
                               id: hoveredStateId}, { hover: true});
         }
 
        map.getCanvas().style.cursor = 'pointer';
         //var coordinates = e.features[0].geometry.coordinates.slice();
-        var ppsoe = e.features[0].properties.psoe_votespercentage.toLocaleString();
+        var ppsoe = e.features[0].properties.psoe.toLocaleString();
         var ppp = e.features[0].properties.pp.toLocaleString();
         var villa = e.features[0].properties.municpii.toLocaleString();
         var pcs = e.features[0].properties.cs.toLocaleString();
         var pup = e.features[0].properties.podemos.toLocaleString();
         var pvox = e.features[0].properties.vox.toLocaleString();
-        var perc = e.features[0].properties.erc_votespercentage.toLocaleString();
+        var perc = e.features[0].properties.erc.toLocaleString();
         var ppnv = e.features[0].properties.pnv.toLocaleString();
-        var jxcat = e.features[0].properties.jjxcatporcentaje.toLocaleString();
-        var bildu = e.features[0].properties.eh_bildu.toLocaleString();
+        var jxcat = e.features[0].properties.jxcat.toLocaleString();
+        var bildu = e.features[0].properties.bildu.toLocaleString();
         var potros = e.features[0].properties.potros.toLocaleString();
 
          popup.setLngLat(e.lngLat)
@@ -223,7 +223,7 @@ var popup = new mapboxgl.Popup({
         popup.remove();
         if (hoveredStateId) {          
           map.setFeatureState({ source: 'resultados', 
-                                sourceLayer: 'elecciones_2019_ganador-7jebap',
+                                sourceLayer: 'elecciones_2019_siusplau_1-a6ddwh',
                                 id: hoveredStateId}, { hover: false});
         }
         hoveredStateId = null;
