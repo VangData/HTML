@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Voto Ciudadanos 2016</title>
+<style>
+     @import url('https://fonts.googleapis.com/css?family=Open+Sans:200,400,600,700,800');
+    *{margin: 0; padding: 0;}
+#map {
+    width: 100%;
+    height: 550px;
+
+}
+
+
+
+.legend {
+  background-color: #ffffff;
+    border-radius: 3px;
+    bottom: 10px;
+    padding: 7px;
+    position: absolute;
+    right: 10px;
+    z-index: 1;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 0 10px 2px rgba(0,0,0,.1);
+}
+
+.legend clearfix {
+    background-color: #ffffff;
+    border-radius: 3px;
+    bottom: 10px;
+    padding: 7px 10px 8px 5px;
+    position: absolute;
+    right: 0px;
+    z-index: 1;
+    width: 200px;
+    text-align: left;
+    box-shadow: 0 0 10px 2px rgba(0,0,0,.1);
+}
+.legend h1 {
+    font-size: 10px;
+    font-family: OpenSans-Semibold, Open Sans;
+    font-weight: 600;
+    fill: #aeaeaf;
+    margin: 0px 0 -11px 0;
+    text-transform: uppercase;
+    text-align: left;
+}
+.legend span {
+    float: left;
+    height: 10px;
+    width: 15.9%;
+    font-size: 9px;
+    color: #aeaeaf;
+    margin-bottom: 5px;
+    padding: 2px;
+}
+
+.legend label {
+    font-size: 10px;
+    font-family: OpenSans-Semibold, Open Sans;
+    fill: #aeaeaf;
+    padding: 0 5px;
+    text-align: left;
+
+
+}
+</style>
+
+<script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+<script type="text/javascript" src="https://rawcdn.githack.com/VangData/prova/303a4dd5dd7d718c2ecab4b40035ce5baa53e662/junto_cartodb_1_mergeb.js"></script>
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.0.0/mapbox-gl-geocoder.min.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.0.0/mapbox-gl-geocoder.css' type='text/css' />
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+<script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.css' rel='stylesheet' />
+<body>
+
+<div id='map'>
+
+</nav></div></div><div id='geocoder' class='geocoder'></div>
+
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoibGF1cjA1IiwiYSI6ImNpbmtmM2FjazAwODF2eG0yNjhteTcxdHIifQ.l7uzjVe2b1L8dHh_Z9JjoQ';
+var map = new mapboxgl.Map({
+container: 'map', // container id
+style: 'mapbox://styles/laur05/cjv6iiluq01vl1fqn5yu67bd5', 
+center:  [2.16, 41.395], // starting position [lng, lat]
+zoom: 10.9,// starting zoom
+minZoom: 2,
+maxZoom: 20,
+attributionControl: false,
+maxBounds: [[2.0399,41.319],[2.281,41.471] ]
+
+});
+var hoveredStateId =  null;
+var searched_lngLat = null;
+
+
+map.on('load', function () {
+// Add a layer showing the state polygons.
+
+
+map.addSource("resultados", {
+    type: 'vector',
+    url: 'mapbox://laur05.3wk80fq7',
+});
+
+var layers = map.getStyle().layers;
+// Find the index of the first symbol layer in the map style
+
+map.addLayer({
+'id': 'tiles-fills',
+'type': 'fill',
+'renderingMode': '2d',
+'source': 'resultados',
+'source-layer': 'barcelona-0rp9w7',
+'paint': {
+'fill-color': ["match", ["get","guanyador_2"],
+        "PSC", "#f20000",
+        "PP", "#3dc8ff",
+        "ECP", "#a50e6b",
+        "Cs  ", "#f48541",
+        "JxCAT", "#172d84",
+        "ERC", "#f4d442",
+        "#40A5A4"],
+'fill-opacity': 0.6,
+}}, "road-major-link-case");
+
+map.addLayer({
+'id': 'tiles-borders',
+'type': 'line',
+'renderingMode': '2d',
+'source': 'resultados',
+'source-layer': 'barcelona-0rp9w7',
+'paint': {
+'line-color': "white",
+        "line-width":  0.1}
+    }, "admin");
+
+
+
+// Add zoom and rotation controls to the map.
+var nav = new mapboxgl.NavigationControl( {showCompass:false});
+map.addControl(nav, 'top-left');
+
+// disable map zoom when using scroll
+map.scrollZoom.disable();
+
+
+var geocoder = new MapboxGeocoder({
+countries: 'es',
+accessToken: mapboxgl.accessToken,
+mapboxgl: mapboxgl,
+types: 'address',
+placeholder: 'Busca tu calle',
+zoom: 18,
+bbox: [2.0399,41.319,2.281,41.471],
+proximity: {
+    longitude: 2.16,
+    latitude: 41.395,
+}
+
+});
+
+map.addControl(geocoder, 'top-right');
+
+var popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+}); 
+
+   map.on('mousemove', 'tiles-fills', function(e) {
+
+    if (e.features.length > 0) {
+          if (hoveredStateId) {          
+            map.setFeatureState({ source: 'resultados', 
+                                  sourceLayer: 'barcelona-0rp9w7',
+                                  id: hoveredStateId}, { hover: false});
+          }
+          hoveredStateId = e.features[0].id;
+          map.setFeatureState({ source: 'resultados', 
+                              sourceLayer: 'barcelona-0rp9w7',
+                              id: hoveredStateId}, { hover: true});
+        }
+
+       map.getCanvas().style.cursor = 'pointer';
+        //var coordinates = e.features[0].geometry.coordinates.slice();
+        var ganador = e.features[0].properties.guanyador_2.toLocaleString();
+        var distrito = e.features[0].properties.dtrite.toLocaleString();
+        var sc = e.features[0].properties.sccodi.toLocaleString();
+        var erc = e.features[0].properties.erc.toLocaleString();
+        var vox = e.features[0].properties.vox.toLocaleString();
+        var cs = e.features[0].properties.cs.toLocaleString();
+        var psc = e.features[0].properties.psc.toLocaleString();
+        var pp = e.features[0].properties.pp.toLocaleString();
+        var jxcat = e.features[0].properties.jxcat.toLocaleString();
+        var podemos = e.features[0].properties.ecp.toLocaleString();
+
+
+
+         popup.setLngLat(e.lngLat)
+            .setHTML("<div style='color:black;font-size:14px;font-family: OpenSans-bold, Open Sans;'><b>" + distrito + "</b></div><hr><div style='color:black;font-size:10px;font-family: OpenSans-bold, Open Sans;'</div><table style='border-collapse: collapse; font-family: Open Sans;'>Sección Censal: " + sc + "</br><b>" + ganador + "</b></div><tbody><tr><th></th><th style='text-align:right'>Porcentaje</th></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color: #f4d442; margin-right: 4px;margin-bottom:-1px'></span>ERC</td><td style='text-align:right;padding-bottom:2px;padding-top:2px'>" + erc + "</td></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color: #172d84; margin-right: 4px;margin-bottom:-1px'></span>JxCAT</td><td style='text-align:right;padding-bottom:3px;padding-top:2px'>" + jxcat + "</td></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color: #f20000; margin-right: 4px;margin-bottom:-1px'></span>PSC</td><td style='text-align:right;padding-bottom:3px;padding-top:2px'>" + psc + "</td></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color: #a50e6b; margin-right: 4px;margin-bottom:-1px'></span>Podemos</td><td style='text-align:right;padding-bottom:3px;padding-top:2px'>" + podemos + "</td></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color: #f48541; margin-right: 4px;margin-bottom:-1px'></span>Cs</td><td style='text-align:right;padding-bottom:3px;padding-top:2px'>" + cs + "</td></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color: #3dc8ff; margin-right: 4px;margin-bottom:-1px'></span>PP</td><td style='text-align:right;padding-bottom:3px;padding-top:2px'>" + pp + "</td></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color: #9cd834; margin-right: 4px;margin-bottom:-1px'></span>Vox</td><td style='text-align:right;padding-bottom:3px;padding-top:2px'>" + vox )
+            .addTo(map);
+  });   
+        // Change the cursor style as a UI indicator.
+
+        
+        // Display a popup with the name of the county
+
+
+  map.on('mouseleave', 'tiles-fills', function() {
+      map.getCanvas().style.cursor = '';
+        popup.remove();
+        if (hoveredStateId) {          
+          map.setFeatureState({ source: 'resultados', 
+                                sourceLayer: 'barcelona-0rp9w7',
+                                id: hoveredStateId}, { hover: false});
+        }
+        hoveredStateId = null;
+      });
+});   
+
+
+
+
+</script>
+ 
+
+   
+	</body>
+</html>
