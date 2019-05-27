@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Voto Ciudadanos 2016</title>
+<style>
+     @import url('https://fonts.googleapis.com/css?family=Open+Sans:200,400,600,700,800');
+    *{margin: 0; padding: 0;}
+#map {
+    width: 100%;
+    height: 550px;
+
+}
+
+
+
+.legend {
+  background-color: #ffffff;
+    border-radius: 3px;
+    bottom: 10px;
+    padding: 7px;
+    position: absolute;
+    right: 10px;
+    z-index: 1;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 0 10px 2px rgba(0,0,0,.1);
+}
+
+.legend clearfix {
+    background-color: #ffffff;
+    border-radius: 3px;
+    bottom: 10px;
+    padding: 7px 10px 8px 5px;
+    position: absolute;
+    right: 0px;
+    z-index: 1;
+    width: 200px;
+    text-align: left;
+    box-shadow: 0 0 10px 2px rgba(0,0,0,.1);
+}
+.legend h1 {
+    font-size: 10px;
+    font-family: OpenSans-Semibold, Open Sans;
+    font-weight: 600;
+    fill: #aeaeaf;
+    margin: 0px 0 -11px 0;
+    text-transform: uppercase;
+    text-align: left;
+}
+.legend span {
+    float: left;
+    height: 10px;
+    width: 15.9%;
+    font-size: 9px;
+    color: #aeaeaf;
+    margin-bottom: 5px;
+    padding: 2px;
+}
+
+.legend label {
+    font-size: 10px;
+    font-family: OpenSans-Semibold, Open Sans;
+    fill: #aeaeaf;
+    padding: 0 5px;
+    text-align: left;
+
+
+}
+</style>
+
+<script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+<script type="text/javascript" src="https://rawcdn.githack.com/VangData/prova/303a4dd5dd7d718c2ecab4b40035ce5baa53e662/junto_cartodb_1_mergeb.js"></script>
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.0.0/mapbox-gl-geocoder.min.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.0.0/mapbox-gl-geocoder.css' type='text/css' />
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+<script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.css' rel='stylesheet' />
+<body>
+
+<div id='map'>
+
+</nav></div></div><div id='geocoder' class='geocoder'></div>
+
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoibGF1cjA1IiwiYSI6ImNpbmtmM2FjazAwODF2eG0yNjhteTcxdHIifQ.l7uzjVe2b1L8dHh_Z9JjoQ';
+var map = new mapboxgl.Map({
+container: 'map', // container id
+style: 'mapbox://styles/laur05/cjuvi3xkc8dik1fmtpwe3xjhh', 
+center:  [-4.0222, 39.5], // starting position [lng, lat]
+zoom: 4.7,// starting zoom
+minZoom: 2,
+maxZoom: 10,
+attributionControl: false,
+maxBounds: [[-19,27],[9,45] ]
+});
+var hoveredStateId =  null;
+var searched_lngLat = null;
+
+
+map.on('load', function () {
+// Add a layer showing the state polygons.
+
+
+map.addSource("resultados", {
+    type: 'vector',
+    url: 'mapbox://laur05.2qupfhdy',
+});
+
+var layers = map.getStyle().layers;
+// Find the index of the first symbol layer in the map style
+
+map.addLayer({
+'id': 'tiles-fills',
+'type': 'fill',
+'renderingMode': '2d',
+'source': 'resultados',
+'source-layer': 'europees2019C-2w34vy',
+'paint': {
+'fill-color': ["match", ["get","primforcaN"],
+        "PSOE", "#f20000",
+        "PSC", "#f20000",
+        "PP", "#3dc8ff",
+        "JxCAT-JUNTS", "#023382",
+        "EH BILDU-ORAIN ERREPUBLIKAK", "#7ea010",
+        "ERC-ARA REPÚBLIQUES", "#e8c60b",
+        "Cs", "#e8720b",
+        "CPE", "#d6d6d6",
+        "CCa-PNC", "#e8de74",
+        "PODEMOS-IU", "#a80d9b",
+        "Podemos-IU ANDALUCÍA", "#a80d9b",
+        "GBAI", "#023382",
+        "VOX", "#023382",
+        "BNG-AGORA REPÚBLICAS", "#023382",
+        "EL PI", "#d6d6d6",
+        "RECORTES CERO-LV-GVE", "#0d5b26",
+        "CV-EC", "#d6d6d6",
+        "CEUS", "#008c7b",
+        "EAJ-PNV", "#008c7b",
+        "CEX-CREX-PREX", "#d6d6d6",
+        "CXE", "#d6d6d6",
+        "PODEMOS-EUPV", "#a80d9b",
+        "#d6d6d6"],
+'fill-opacity': ["interpolate", ["linear", 100], ["get", "primforcaP"],
+        0.00, 0.05,
+        5, 0.2,
+        10, 0.4,
+        30, 0.6,
+        40, 0.8,
+        50, 1.0]
+}}, "admin");
+
+map.addLayer({
+'id': 'tiles-borders',
+'type': 'line',
+'renderingMode': '2d',
+'source': 'resultados',
+'source-layer': 'europees2019C-2w34vy',
+'paint': {
+'line-color': "white",
+        "line-width":  0.001}
+    }, "admin");
+
+
+
+// Add zoom and rotation controls to the map.
+var nav = new mapboxgl.NavigationControl( {showCompass:false});
+map.addControl(nav, 'top-left');
+
+// disable map zoom when using scroll
+map.scrollZoom.disable();
+
+
+var geocoder = new MapboxGeocoder({
+countries: 'es',
+accessToken: mapboxgl.accessToken,
+mapboxgl: mapboxgl,
+types: 'place',
+placeholder: 'Busca tu municipio',
+zoom: 7,
+});
+
+map.addControl(geocoder, 'top-right');
+
+var popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+}); 
+
+   map.on('mousemove', 'tiles-fills', function(e) {
+
+    if (e.features.length > 0) {
+          if (hoveredStateId) {          
+            map.setFeatureState({ source: 'resultados', 
+                                  sourceLayer: 'europees2019C-2w34vy',
+                                  id: hoveredStateId}, { hover: false});
+          }
+          hoveredStateId = e.features[0].id;
+          map.setFeatureState({ source: 'resultados', 
+                              sourceLayer: 'europees2019C-2w34vy',
+                              id: hoveredStateId}, { hover: true});
+        }
+
+       map.getCanvas().style.cursor = 'pointer';
+ 
+                var colorganador = e.features[0].properties.primforcaN == 'PSOE' ? "#f20000": e.features[0].properties.primforcaN == 'PSC' ? "#f20000": 
+                e.features[0].properties.primforcaN == 'PP' ? "#3dc8ff":e.features[0].properties.primforcaN == 'JxCAT-JUNTS' ? "#023382":e.features[0].properties.primforcaN == 'EH BILDU-ORAIN ERREPUBLIKAK' ? "#7ea010": 
+                e.features[0].properties.primforcaN == 'ERC-ARA REPÚBLIQUES' ? "#e8c60b":e.features[0].properties.primforcaN == 'Cs' ? "#e8720b":e.features[0].properties.primforcaN == 'CPE' ? "#d6d6d6":
+                e.features[0].properties.primforcaN == 'CCa-PNC' ? "#e8de74":e.features[0].properties.primforcaN == 'PODEMOS-IU' ? "#a80d9b":e.features[0].properties.primforcaN == 'Podemos-IU ANDALUCÍA' ? "#a80d9b":
+                e.features[0].properties.primforcaN == 'GBAI' ? "#023382":e.features[0].properties.primforcaN == 'VOX' ? "#023382":e.features[0].properties.primforcaN == 'BNG-AGORA REPÚBLICAS' ? "#023382":
+                e.features[0].properties.primforcaN == 'EL PI' ? "#d6d6d6":e.features[0].properties.primforcaN == 'RECORTES CERO-LV-GVE' ? "#0d5b26":e.features[0].properties.primforcaN == 'CV-EC' ? "#d6d6d6":
+                e.features[0].properties.primforcaN == 'CEUS' ? "#008c7b":e.features[0].properties.primforcaN == 'EAJ-PNV' ? "#008c7b":e.features[0].properties.primforcaN == 'CEX-CREX-PREX' ? "#d6d6d6":e.features[0].properties.primforcaN == 'CXE' ? "#d6d6d6":e.features[0].properties.primforcaN == 'PODEMOS-EUPV' ? "#a80d9b": 
+                "#c6c6c6";
+
+                var colorsegundo = e.features[0].properties.segonforcaN == 'PSOE' ? "#f20000": e.features[0].properties.segonforcaN == 'PSC' ? "#f20000": 
+                e.features[0].properties.segonforcaN == 'PP' ? "#3dc8ff":e.features[0].properties.segonforcaN == 'JxCAT-JUNTS' ? "#023382":e.features[0].properties.segonforcaN == 'EH BILDU-ORAIN ERREPUBLIKAK' ? "#7ea010": 
+                e.features[0].properties.segonforcaN == 'ERC-ARA REPÚBLIQUES' ? "#e8c60b":e.features[0].properties.segonforcaN == 'Cs' ? "#e8720b":e.features[0].properties.segonforcaN == 'CPE' ? "#d6d6d6":
+                e.features[0].properties.segonforcaN == 'CCa-PNC' ? "#e8de74":e.features[0].properties.segonforcaN == 'PODEMOS-IU' ? "#a80d9b":e.features[0].properties.segonforcaN == 'Podemos-IU ANDALUCÍA' ? "#a80d9b":
+                e.features[0].properties.segonforcaN == 'GBAI' ? "#023382":e.features[0].properties.segonforcaN == 'VOX' ? "#023382":e.features[0].properties.segonforcaN == 'BNG-AGORA REPÚBLICAS' ? "#023382":
+                e.features[0].properties.segonforcaN == 'EL PI' ? "#d6d6d6":e.features[0].properties.segonforcaN == 'RECORTES CERO-LV-GVE' ? "#0d5b26":e.features[0].properties.segonforcaN == 'CV-EC' ? "#d6d6d6":
+                e.features[0].properties.segonforcaN == 'CEUS' ? "#008c7b":e.features[0].properties.segonforcaN == 'EAJ-PNV' ? "#008c7b":e.features[0].properties.segonforcaN == 'CEX-CREX-PREX' ? "#d6d6d6":e.features[0].properties.segonforcaN == 'CXE' ? "#d6d6d6":e.features[0].properties.segonforcaN == 'PODEMOS-EUPV' ? "#a80d9b": 
+                "#c6c6c6";
+
+                 var colortercero = e.features[0].properties.tercforcaN == 'PSOE' ? "#f20000": e.features[0].properties.tercforcaN == 'PSC' ? "#f20000": 
+                e.features[0].properties.tercforcaN == 'PP' ? "#3dc8ff":e.features[0].properties.tercforcaN == 'JxCAT-JUNTS' ? "#023382":e.features[0].properties.tercforcaN == 'EH BILDU-ORAIN ERREPUBLIKAK' ? "#7ea010": 
+                e.features[0].properties.tercforcaN == 'ERC-ARA REPÚBLIQUES' ? "#e8c60b":e.features[0].properties.tercforcaN == 'Cs' ? "#e8720b":e.features[0].properties.tercforcaN == 'CPE' ? "#d6d6d6":
+                e.features[0].properties.tercforcaN == 'CCa-PNC' ? "#e8de74":e.features[0].properties.tercforcaN == 'PODEMOS-IU' ? "#a80d9b":e.features[0].properties.tercforcaN == 'Podemos-IU ANDALUCÍA' ? "#a80d9b":
+                e.features[0].properties.tercforcaN == 'GBAI' ? "#023382":e.features[0].properties.tercforcaN == 'VOX' ? "#023382":e.features[0].properties.tercforcaN == 'BNG-AGORA REPÚBLICAS' ? "#023382":
+                e.features[0].properties.tercforcaN == 'EL PI' ? "#d6d6d6":e.features[0].properties.tercforcaN == 'RECORTES CERO-LV-GVE' ? "#0d5b26":e.features[0].properties.tercforcaN == 'CV-EC' ? "#d6d6d6":
+                e.features[0].properties.tercforcaN == 'CEUS' ? "#008c7b":e.features[0].properties.tercforcaN == 'EAJ-PNV' ? "#008c7b":e.features[0].properties.tercforcaN == 'CEX-CREX-PREX' ? "#d6d6d6":e.features[0].properties.tercforcaN == 'CXE' ? "#d6d6d6":e.features[0].properties.tercforcaN == 'PODEMOS-EUPV' ? "#a80d9b": 
+                "#c6c6c6";
+
+                var colorcuarto = e.features[0].properties.quartforcaN == 'PSOE' ? "#f20000": e.features[0].properties.quartforcaN == 'PSC' ? "#f20000": 
+                e.features[0].properties.quartforcaN == 'PP' ? "#3dc8ff":e.features[0].properties.quartforcaN == 'JxCAT-JUNTS' ? "#023382":e.features[0].properties.quartforcaN == 'EH BILDU-ORAIN ERREPUBLIKAK' ? "#7ea010": 
+                e.features[0].properties.quartforcaN == 'ERC-ARA REPÚBLIQUES' ? "#e8c60b":e.features[0].properties.quartforcaN == 'Cs' ? "#e8720b":e.features[0].properties.quartforcaN == 'CPE' ? "#d6d6d6":
+                e.features[0].properties.quartforcaN == 'CCa-PNC' ? "#e8de74":e.features[0].properties.quartforcaN == 'PODEMOS-IU' ? "#a80d9b":e.features[0].properties.quartforcaN == 'Podemos-IU ANDALUCÍA' ? "#a80d9b":
+                e.features[0].properties.quartforcaN == 'GBAI' ? "#023382":e.features[0].properties.quartforcaN == 'VOX' ? "#023382":e.features[0].properties.quartforcaN == 'BNG-AGORA REPÚBLICAS' ? "#023382":
+                e.features[0].properties.quartforcaN == 'EL PI' ? "#d6d6d6":e.features[0].properties.quartforcaN == 'RECORTES CERO-LV-GVE' ? "#0d5b26":e.features[0].properties.quartforcaN == 'CV-EC' ? "#d6d6d6":
+                e.features[0].properties.quartforcaN == 'CEUS' ? "#008c7b":e.features[0].properties.quartforcaN == 'EAJ-PNV' ? "#008c7b":e.features[0].properties.quartforcaN == 'CEX-CREX-PREX' ? "#d6d6d6":e.features[0].properties.quartforcaN == 'CXE' ? "#d6d6d6":e.features[0].properties.quartforcaN == 'PODEMOS-EUPV' ? "#a80d9b": 
+                "#c6c6c6";
+                
+
+
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var ganador = e.features[0].properties.primforcaN;
+        var segundo = e.features[0].properties.segonforcaN;
+        var tercero = e.features[0].properties.tercforcaN;
+        var cuarto = e.features[0].properties.quartforcaN;
+        var quinto = e.features[0].properties.cincforcaN;
+        var municipio = e.features[0].properties.NMUNI;
+        var pganador = e.features[0].properties.primforcaP;
+        var psegundo = e.features[0].properties.segonforcaP;
+        var ptercero = e.features[0].properties.tercforcaP;
+        var pcuarto = e.features[0].properties.quartforcaP;
+        var pquinto = e.features[0].properties.cincforcaP;
+        
+
+
+
+         popup.setLngLat(e.lngLat)
+            .setHTML("<div style='color:black;font-size:12px;font-family: OpenSans-bold, Open Sans;'><b>" + municipio + "</b><div style='color:black;font-size:10px;font-family: OpenSans-bold, Open Sans;'</div><table style='border-collapse: collapse; font-family: Open Sans;'></div><tbody><tr><th></th><th style='text-align:right'>Porcentaje</th></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color:" + colorganador + "; margin-right: 4px;margin-bottom:-1px'></span>" + ganador + "</td><td style='text-align:right;padding-bottom:2px;padding-top:2px'>" + pganador + "</td></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color:" + colorsegundo + "; margin-right: 4px;margin-bottom:-1px'></span>" + segundo + "</td><td style='text-align:right;padding-bottom:3px;padding-top:2px'>" + psegundo + "</td></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color:" + colortercero + "; margin-right: 4px;margin-bottom:-1px'></span>" + tercero + "</td><td style='text-align:right;padding-bottom:3px;padding-top:2px'>" + ptercero + "</td></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color:" + colorcuarto + "; margin-right: 4px;margin-bottom:-1px'></span>" + cuarto + "</td><td style='text-align:right;padding-bottom:3px;padding-top:2px'>" + pcuarto )
+            .addTo(map);
+  });   
+        // Change the cursor style as a UI indicator.
+
+        
+        // Display a popup with the name of the county
+
+
+  map.on('mouseleave', 'tiles-fills', function() {
+      map.getCanvas().style.cursor = '';
+        popup.remove();
+        if (hoveredStateId) {          
+          map.setFeatureState({ source: 'resultados', 
+                                sourceLayer: 'europees2019C-2w34vy',
+                                id: hoveredStateId}, { hover: false});
+        }
+        hoveredStateId = null;
+      });
+});   
+
+
+
+
+</script>
+ 
+
+   
+	</body>
+</html>
