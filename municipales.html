@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Voto Ciudadanos 2016</title>
+<style>
+     @import url('https://fonts.googleapis.com/css?family=Open+Sans:200,400,600,700,800');
+    *{margin: 0; padding: 0;}
+#map {
+    width: 100%;
+    height: 550px;
+}
+.legend {
+  background-color: #ffffff;
+    border-radius: 3px;
+    bottom: 10px;
+    padding: 7px;
+    position: absolute;
+    right: 10px;
+    z-index: 1;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 0 10px 2px rgba(0,0,0,.1);
+}
+.legend clearfix {
+    background-color: #ffffff;
+    border-radius: 3px;
+    bottom: 10px;
+    padding: 7px 10px 8px 5px;
+    position: absolute;
+    right: 0px;
+    z-index: 1;
+    width: 200px;
+    text-align: left;
+    box-shadow: 0 0 10px 2px rgba(0,0,0,.1);
+}
+.legend h1 {
+    font-size: 10px;
+    font-family: OpenSans-Semibold, Open Sans;
+    font-weight: 600;
+    fill: #aeaeaf;
+    margin: 0px 0 -11px 0;
+    text-transform: uppercase;
+    text-align: left;
+}
+.legend span {
+    float: left;
+    height: 10px;
+    width: 15.9%;
+    font-size: 9px;
+    color: #aeaeaf;
+    margin-bottom: 5px;
+    padding: 2px;
+}
+.legend label {
+    font-size: 10px;
+    font-family: OpenSans-Semibold, Open Sans;
+    fill: #aeaeaf;
+    padding: 0 5px;
+    text-align: left;
+}
+</style>
+
+<script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+<script type="text/javascript" src="https://rawcdn.githack.com/VangData/prova/303a4dd5dd7d718c2ecab4b40035ce5baa53e662/junto_cartodb_1_mergeb.js"></script>
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.0.0/mapbox-gl-geocoder.min.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.0.0/mapbox-gl-geocoder.css' type='text/css' />
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+<script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.css' rel='stylesheet' />
+<body>
+
+<div id='map'>
+
+</nav></div></div><div id='geocoder' class='geocoder'></div>
+
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoibGF1cjA1IiwiYSI6ImNpbmtmM2FjazAwODF2eG0yNjhteTcxdHIifQ.l7uzjVe2b1L8dHh_Z9JjoQ';
+var map = new mapboxgl.Map({
+container: 'map', // container id
+style: 'mapbox://styles/laur05/cjuvi3xkc8dik1fmtpwe3xjhh', 
+center:  [-4.0222, 39.5], // starting position [lng, lat]
+zoom: 4.7,// starting zoom
+minZoom: 2,
+maxZoom: 10,
+attributionControl: false,
+maxBounds: [[-19,27],[9,45] ]
+});
+var hoveredStateId =  null;
+var searched_lngLat = null;
+map.on('load', function () {
+// Add a layer showing the state polygons.
+map.addSource("resultados", {
+    type: 'vector',
+    url: 'mapbox://laur05.4v3qgjy2',
+});
+var layers = map.getStyle().layers;
+// Find the index of the first symbol layer in the map style
+map.addLayer({
+'id': 'tiles-fills',
+'type': 'fill',
+'renderingMode': '2d',
+'source': 'resultados',
+'source-layer': 'municipals2019B_1-5oumv5',
+'paint': {
+'fill-color': ["match", ["get","primforcaN"],
+        "PSOE", "#f20000",
+        "PSC", "#f20000",
+        "PSA-Partido Socialista de Andalucia", "#f20000",
+        "AHORA DECIDE", "#f20000",
+        "PP", "#3dc8ff",
+        "JxCAT", "#023382",
+        "PRC", "#023382",
+        "JxCAT-JUNTS", "#023382",
+        "JxCat-JUNTS", "#023382",
+        "JxCAT - JUNTS", "#023382",
+        "JxCAT ? JUNTS", "#023382",
+        "JxCat", "#023382",
+        "TFM-JUNTS", "#023382",
+        "TFR-JUNTS", "#023382",
+        "TAV-JxCAT-JUNTS", "#023382",
+        "Junts", "#023382",
+        "JUNTS", "#023382",
+        "ERC", "#e8c60b",
+        "ERC-AM", "#e8c60b",
+        "ERC / ESQUERRA", "#e8c60b",
+        "ERC / MES", "#e8c60b",
+        "SD - ERC - AM", "#e8c60b",
+        "VIU-ERC-AM", "#e8c60b",
+        "FM-VIU-ERC-AM", "#e8c60b",
+        "MÉS-APIB", "#e8c60b",
+        "MÉS- UPM cat", "#e8c60b",
+        "CUP", "#e8de74",
+        "C's", "#e8720b",
+        "Cs", "#e8720b",
+        "PARTIDO ARAGONES", "#8c0101",
+        "EH Bildu", "#7ea010",
+        "EAJ-PNV", "#008c7b",
+        "IU", "#0d5b26",
+        "EUPV", "#0d5b26",
+        "COMPROMÍS", "#0d5b26",
+        "ADELANTE", "#a80d9b",
+        "EN COMÚ", "#a80d9b",
+        "PODEMOS", "#a80d9b",
+        "UNIDAS-IU", "#a80d9b",
+        "NA+", "#3dc8ff",
+        "BNG", "#023382",
+        "CHA", "#3f4241",
+        "CC", "#e8de74",
+        "P.P.SO.", "#6ae8c6",
+        "U.P.L.", "#e86aad",
+        "VOX", "#44c910",
+        "MÁS MADRID", "#6ae8c6",
+    
+        "#d6d6d6"],
+'fill-opacity': ["interpolate", ["linear", 100], ["get", "primforcaP"],
+        0.00, 0.05,
+        5, 0.2,
+        15, 0.4,
+        20, 0.6,
+        25, 0.8,
+        30, 1.0]
+}}, "admin");
+map.addLayer({
+'id': 'tiles-borders',
+'type': 'line',
+'renderingMode': '2d',
+'source': 'resultados',
+'source-layer': 'municipals2019B_1-5oumv5',
+'paint': {
+'line-color': "white",
+        "line-width":  0.001}
+    }, "admin");
+// Add zoom and rotation controls to the map.
+var nav = new mapboxgl.NavigationControl( {showCompass:false});
+map.addControl(nav, 'top-left');
+// disable map zoom when using scroll
+map.scrollZoom.disable();
+var geocoder = new MapboxGeocoder({
+countries: 'es',
+accessToken: mapboxgl.accessToken,
+mapboxgl: mapboxgl,
+types: 'place',
+placeholder: 'Busca tu municipio',
+zoom: 7,
+});
+map.addControl(geocoder, 'top-right');
+var popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+}); 
+   map.on('mousemove', 'tiles-fills', function(e) {
+    if (e.features.length > 0) {
+          if (hoveredStateId) {          
+            map.setFeatureState({ source: 'resultados', 
+                                  sourceLayer: 'municipals2019B_1-5oumv5',
+                                  id: hoveredStateId}, { hover: false});
+          }
+          hoveredStateId = e.features[0].id;
+          map.setFeatureState({ source: 'resultados', 
+                              sourceLayer: 'municipals2019B_1-5oumv5',
+                              id: hoveredStateId}, { hover: true});
+        }
+       map.getCanvas().style.cursor = 'pointer';
+                var colorganador = e.features[0].properties.primforcaN == 'PSOE' ? "#f20000": e.features[0].properties.primforcaN == 'PSC' ? "#f20000": 
+                e.features[0].properties.primforcaN == 'PSA-Partido Socialista de Andalucia' ? "#f20000":e.features[0].properties.primforcaN == 'AHORA DECIDE' ? "#f20000":e.features[0].properties.primforcaN == 'PP' ? "#3dc8ff": 
+                e.features[0].properties.primforcaN == 'JxCAT' ? "#023382":e.features[0].properties.primforcaN == 'PRC' ? "#023382":e.features[0].properties.primforcaN == 'JxCAT-JUNTS' ? "#023382":
+                e.features[0].properties.primforcaN == 'JxCAT-JUNTS' ? "#023382":e.features[0].properties.primforcaN == 'JxCat-JUNTS' ? "#023382":e.features[0].properties.primforcaN == 'JxCAT - JUNTS' ? "#023382":
+                e.features[0].properties.primforcaN == 'JxCAT ? JUNTS' ? "#023382":e.features[0].properties.primforcaN == 'JxCat' ? "#023382":e.features[0].properties.primforcaN == 'TFM-JUNTS' ? "#023382":
+                e.features[0].properties.primforcaN == 'TFR-JUNTS' ? "#023382":e.features[0].properties.primforcaN == 'TAV-JxCAT-JUNTS' ? "#023382":e.features[0].properties.primforcaN == 'Junts' ? "#023382":
+                e.features[0].properties.primforcaN == 'JUNTS' ? "#023382":e.features[0].properties.primforcaN == 'ERC' ? "#e8c60b":e.features[0].properties.primforcaN == 'ERC-AM' ? "#e8c60b":e.features[0].properties.primforcaN == 'ERC / ESQUERRA' ? "#e8c60b":e.features[0].properties.primforcaN == 'ERC / MES' ? "#e8c60b": 
+                e.features[0].properties.primforcaN == 'SD - ERC - AM' ? "#e8c60b":e.features[0].properties.primforcaN == 'FM-VIU-ERC-AM' ? "#e8c60b":e.features[0].properties.primforcaN == 'MÉS-APIB' ? "#e8c60b":
+                e.features[0].properties.primforcaN == 'MÉS- UPM cat' ? "#e8c60b":e.features[0].properties.primforcaN == 'CUP' ? "#e8de74":e.features[0].properties.primforcaN == "C's" ? "#e8720b":
+                e.features[0].properties.primforcaN == 'PARTIDO ARAGONES' ? "#8c0101":e.features[0].properties.primforcaN == 'EH Bildu' ? "#7ea010":e.features[0].properties.primforcaN == 'EAJ-PNV' ? "#008c7b":
+                e.features[0].properties.primforcaN == 'IU' ? "#0d5b26":e.features[0].properties.primforcaN == 'COMPROMÍS' ? "#0d5b26":e.features[0].properties.primforcaN == 'ADELANTE' ? "#a80d9b":
+                e.features[0].properties.primforcaN == 'NA+' ? "#3dc8ff":e.features[0].properties.primforcaN == 'PODEMOS' ? "#a80d9b":e.features[0].properties.primforcaN == 'EN COMÚ' ? "#a80d9b":e.features[0].properties.primforcaN == 'UNIDAS-IU' ? "#a80d9b":
+                e.features[0].properties.primforcaN == 'BNG' ? "#023382":e.features[0].properties.primforcaN == 'CHA' ? "#3f4241":e.features[0].properties.primforcaN == 'CC' ? "#e8de74":
+                e.features[0].properties.primforcaN == 'P.P.SO.' ? "#6ae8c6":e.features[0].properties.primforcaN == 'U.P.L.' ? "#e86aad":e.features[0].properties.primforcaN == 'VOX' ? "#44c910":
+                e.features[0].properties.primforcaN == 'MÁS MADRID' ? "#6ae8c6":
+                "#c6c6c6";
+                var colorsegundo = e.features[0].properties.segonforcaN == 'PSOE' ? "#f20000": e.features[0].properties.segonforcaN == 'PSC' ? "#f20000": 
+                e.features[0].properties.segonforcaN == 'PSA-Partido Socialista de Andalucia' ? "#f20000":e.features[0].properties.segonforcaN == 'AHORA DECIDE' ? "#f20000":e.features[0].properties.segonforcaN == 'PP' ? "#3dc8ff": 
+                e.features[0].properties.segonforcaN == 'JxCAT' ? "#023382":e.features[0].properties.segonforcaN == 'PRC' ? "#023382":e.features[0].properties.segonforcaN == 'JxCAT-JUNTS' ? "#023382":
+                e.features[0].properties.segonforcaN == 'JxCAT-JUNTS' ? "#023382":e.features[0].properties.segonforcaN == 'JxCat-JUNTS' ? "#023382":e.features[0].properties.segonforcaN == 'JxCAT - JUNTS' ? "#023382":
+                e.features[0].properties.segonforcaN == 'JxCAT ? JUNTS' ? "#023382":e.features[0].properties.segonforcaN == 'JxCat' ? "#023382":e.features[0].properties.segonforcaN == 'TFM-JUNTS' ? "#023382":
+                e.features[0].properties.segonforcaN == 'TFR-JUNTS' ? "#023382":e.features[0].properties.segonforcaN == 'TAV-JxCAT-JUNTS' ? "#023382":e.features[0].properties.segonforcaN == 'Junts' ? "#023382":
+                e.features[0].properties.segonforcaN == 'JUNTS' ? "#023382":e.features[0].properties.segonforcaN == 'ERC' ? "#e8c60b":e.features[0].properties.segonforcaN == 'ERC-AM' ? "#e8c60b":e.features[0].properties.segonforcaN == 'ERC / ESQUERRA' ? "#e8c60b":e.features[0].properties.segonforcaN == 'ERC / MES' ? "#e8c60b": 
+                e.features[0].properties.segonforcaN == 'SD - ERC - AM' ? "#e8c60b":e.features[0].properties.segonforcaN == 'FM-VIU-ERC-AM' ? "#e8c60b":e.features[0].properties.segonforcaN == 'MÉS-APIB' ? "#e8c60b":
+                e.features[0].properties.segonforcaN == 'MÉS- UPM cat' ? "#e8c60b":e.features[0].properties.segonforcaN == 'CUP' ? "#e8de74":e.features[0].properties.segonforcaN == "C's" ? "#e8720b":
+                e.features[0].properties.segonforcaN == 'PARTIDO ARAGONES' ? "#8c0101":e.features[0].properties.segonforcaN == 'EH Bildu' ? "#7ea010":e.features[0].properties.segonforcaN == 'EAJ-PNV' ? "#008c7b":
+                e.features[0].properties.segonforcaN == 'IU' ? "#0d5b26":e.features[0].properties.segonforcaN == 'COMPROMÍS' ? "#0d5b26":e.features[0].properties.segonforcaN == 'ADELANTE' ? "#a80d9b":
+                e.features[0].properties.segonforcaN == 'NA+' ? "#3dc8ff":e.features[0].properties.segonforcaN == 'PODEMOS' ? "#a80d9b":e.features[0].properties.segonforcaN == 'EN COMÚ' ? "#a80d9b":e.features[0].properties.segonforcaN == 'UNIDAS-IU' ? "#a80d9b":
+                e.features[0].properties.segonforcaN == 'BNG' ? "#023382":e.features[0].properties.segonforcaN == 'CHA' ? "#3f4241":e.features[0].properties.segonforcaN == 'CC' ? "#e8de74":
+                e.features[0].properties.segonforcaN == 'P.P.SO.' ? "#6ae8c6":e.features[0].properties.segonforcaN == 'U.P.L.' ? "#e86aad":e.features[0].properties.segonforcaN == 'VOX' ? "#44c910":
+                e.features[0].properties.segonforcaN == 'MÁS MADRID' ? "#6ae8c6":
+                "#c6c6c6";
+                
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var ganador = e.features[0].properties.primforcaN;
+        var segundo = e.features[0].properties.segonforcaN;
+        var tercero = e.features[0].properties.tercforcaN;
+        var cuarto = e.features[0].properties.quartforcaN;
+        var quinto = e.features[0].properties.cincforcaN;
+        var municipio = e.features[0].properties.NMUNI;
+        var pganador = e.features[0].properties.primforcaP;
+        var psegundo = e.features[0].properties.segonforcaP;
+        var ptercero = e.features[0].properties.tercforcaP;
+        var pcuarto = e.features[0].properties.quartforcaP;
+        var pquinto = e.features[0].properties.cincforcaP;
+        
+         popup.setLngLat(e.lngLat)
+            .setHTML("<div style='color:black;font-size:12px;font-family: OpenSans-bold, Open Sans;'><b>" + municipio + "</b><div style='color:black;font-size:10px;font-family: OpenSans-bold, Open Sans;'</div><table style='border-collapse: collapse; font-family: Open Sans;'>Partido más votado:</bR>" + ganador + "</div><tbody><tr><th></th><th style='text-align:right'>Porcentaje</th></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color:" + colorganador + "; margin-right: 4px;margin-bottom:-1px'></span>" + ganador + "</td><td style='text-align:right;padding-bottom:2px;padding-top:2px'>" + pganador + "</td></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color:" + colorsegundo + "; margin-right: 4px;margin-bottom:-1px'></span>" + segundo + "</td><td style='text-align:right;padding-bottom:3px;padding-top:2px'>" + psegundo  )
+            .addTo(map);
+  });   
+        // Change the cursor style as a UI indicator.
+        
+        // Display a popup with the name of the county
+  map.on('mouseleave', 'tiles-fills', function() {
+      map.getCanvas().style.cursor = '';
+        popup.remove();
+        if (hoveredStateId) {          
+          map.setFeatureState({ source: 'resultados', 
+                                sourceLayer: 'municipals2019B_1-5oumv5',
+                                id: hoveredStateId}, { hover: false});
+        }
+        hoveredStateId = null;
+      });
+});   
+</script>
+ 
+
+   
+	</body>
+</html>
