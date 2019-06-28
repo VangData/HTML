@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" lang="es" xml:lang="es">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://cdn.rawgit.com/duroty/responsive/master/app.embed.js"></script>
+  <style>
+  @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800');
+    body { 
+      margin:0;
+      position:fixed;
+      top:0;
+      right:0;
+      bottom:0;
+      left:0;
+    	font-family: sans-serif;
+    }
+
+          h3 {
+          font-family: OpenSans-Semibold, Open Sans;
+          font-weight:700;
+          font-size: 18px;
+          fill: #323232;
+          text-align: middle;
+}
+          h5 {
+          font-family: Open Sans;
+          font-size: 12px;
+          font-weight: 400;
+          fill: #323232;
+
+}
+    
+    .button {
+      font-family: Open Sans, Helvetica;
+      padding: 0.5em 0.5em;
+      margin: 0.2px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.8em;
+      border: 1px solid #323232;
+      background-color: white;
+
+    }
+
+    .button.active {
+       background: #323232;
+      background-opacity: 0.5;
+      border: 1px  #323232;
+      color: #fff;
+      border-radius: 0.25rem;
+      transition: all 0.2s ease-in-out;
+
+
+    }
+
+    .button:hover {
+      background: #323232;
+      background-opacity: 0.2;
+      border: 1px  #323232;
+      color: #fff;
+
+    }
+
+      .title {
+      font-family: Open Sans, Helvetica;
+      font-size: 1.5em;
+    }
+
+
+
+
+    #toolbar {
+      margin: auto;
+      width: 100%;
+      display: block;
+      text-align: center;
+    }
+
+
+  </style>
+
+</head><body>
+	
+<script src="https://cdn.rawgit.com/duroty/responsive/master/app.embed.js"></script>
+
+
+  <div id="toolbar" >
+      <button  id="btnClick" class="button">PSOE</button>
+      <button  id="btnClick2" class="button">Podemos</button>
+      <button id="btnClick3" class="button">Ciudadanos</button>
+      <button id="btnClick4" class="button">PP</button>
+      <button id="btnClick5" class="button">ERC</button>
+      <button id="btnClick6" class="button">JxCat</button>
+      <div>
+     <div id="1">
+<script src="https://cdn.rawgit.com/duroty/responsive/master/app.embed.js"></script>
+<div class="flourish-embed" data-src="visualisation/448935"></div><script src="https://public.flourish.studio/resources/embed.js"></script>
+</div>
+
+<div id="2" style="display:none;">
+<script src="https://cdn.rawgit.com/duroty/responsive/master/app.embed.js"></script>
+<div class="flourish-embed" data-src="visualisation/448956"></div><script src="https://public.flourish.studio/resources/embed.js"></script></div>
+
+<div id="3" style="display:none;">
+<script src="https://cdn.rawgit.com/duroty/responsive/master/app.embed.js"></script>
+<div class="flourish-embed" data-src="visualisation/448966"></div><script src="https://public.flourish.studio/resources/embed.js"></script>
+</div>
+
+<div id="4" style="display:none;">
+<script src="https://cdn.rawgit.com/duroty/responsive/master/app.embed.js"></script>
+<div class="flourish-embed" data-src="visualisation/448947"></div><script src="https://public.flourish.studio/resources/embed.js"></script>
+</div>
+<div id="5" style="display:none;">
+<script src="https://cdn.rawgit.com/duroty/responsive/master/app.embed.js"></script>
+<div class="flourish-embed" data-src="visualisation/448979"></div><script src="https://public.flourish.studio/resources/embed.js"></script>
+</div>
+<div id="6" style="display:none;">
+<script src="https://cdn.rawgit.com/duroty/responsive/master/app.embed.js"></script>
+<div class="flourish-embed" data-src="visualisation/448988"></div><script src="https://public.flourish.studio/resources/embed.js"></script>
+</div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+	$("button").click(function(){
+  $("button").removeClass("active");
+  $(this).addClass("active");
+});
+</script>
+<script>
+	$('#btnClick').on('click',function(){
+ if($('#1').css('display') != 'none'){
+$('#1').show().siblings('div').hide();
+ } else if ($('#1').css('display')!='none'){
+$('#1').show().siblings('div').hide();
+ } else {
+$('#1').show().siblings('div').hide();
+ }
+});
+
+$('#btnClick2').on('click',function(){
+  if($('#2').css('display')!='none'){
+$('#2').show().siblings('div').hide();
+  }else if($('#2').css('display')!='none'){
+$('#2').show().siblings('div').hide();
+  } else {
+ $('#2').show().siblings('div').hide();;
+  }
+});
+
+$('#btnClick3').on('click',function(){
+  if($('#3').css('display')!='none'){
+$('#3').show().siblings('div').hide();
+  }else if($('#3').css('display')!='none'){
+$('#3').show().siblings('div').hide();
+  } else {
+ $('#3').show().siblings('div').hide();;
+  }
+});
+$('#btnClick4').on('click',function(){
+  if($('#4').css('display')!='none'){
+$('#4').show().siblings('div').hide();
+  }else if($('#4').css('display')!='none'){
+$('#4').show().siblings('div').hide();
+  } else {
+ $('#4').show().siblings('div').hide();;
+  }
+});
+$('#btnClick5').on('click',function(){
+  if($('#5').css('display')!='none'){
+$('#5').show().siblings('div').hide();
+  }else if($('#5').css('display')!='none'){
+$('#5').show().siblings('div').hide();
+  } else {
+ $('#5').show().siblings('div').hide();;
+  }
+});
+$('#btnClick6').on('click',function(){
+  if($('#6').css('display')!='none'){
+$('#6').show().siblings('div').hide();
+  }else if($('#6').css('display')!='none'){
+$('#6').show().siblings('div').hide();
+  } else {
+ $('#6').show().siblings('div').hide();;
+  }
+});
+</script>
+</body>
+
+    </div>
+    
+</body>
