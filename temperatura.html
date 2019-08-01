@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" lang="es" xml:lang="es">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<style>
+   @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800');
+    *{margin: 0; padding: 0;}
+  .dot {
+    fill: #f56942;
+    stroke: #fff;
+}
+#my_dataviz {
+  width: 100%;
+  height: 600px;
+
+
+}
+
+.title p{
+  font-family: Open Sans, Helvetica;
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #323232;
+  text-align: center;
+
+}
+.ycustom line{
+  stroke: #cbced4;
+}
+
+
+.ycustom path{
+  stroke: #fff;
+}
+
+.ycustom text{
+  fill: #323232;
+  font-size: 0.8rem;
+  font-family: Open Sans, Helvetica;
+}  
+
+.xcustom line{
+  stroke: #cbced4;
+}
+
+.xcustom path{
+  stroke: #fff;
+}
+
+.xcustom text{
+  fill: #323232;
+  font-size: 0.8rem;
+  transform: rotate(45deg);
+  text-anchor: start;
+  font-family: Open Sans, Helvetica;
+  
+} 
+
+.dropdown {
+  font-family: Open Sans, Helvetica;
+  font-size: 1em;
+  font-weight: 600;
+  outline: none;
+  border: 1em;
+  color: #fff;
+  background: #f56942;
+  margin-top: 5px;
+
+
+
+
+}
+
+#selectButton {
+  border-color: #f56942;
+  background: white;
+  color: #f56942;
+  border: 1px solid #f56942;
+  padding: 2px;
+
+  
+
+}
+.tooltip {
+  font-family: Open Sans, Helvetica;
+  font-size: 0.5rem;
+  font-size: 0.8em;
+  outline: none;
+  border: 0;
+  color: #323232;
+  color: white;
+ 
+  text-align: center;
+  display: block;
+  position: absolute;
+
+}
+.op {
+  background-color: #fff;
+  color: #323232;
+  font-size: 0.8em;
+  padding: 2;
+  border: 0;
+  outline: none;
+
+
+}
+.dots {
+   fill: #f56942;
+   stroke: #fff;
+   opacity: 0px;
+        
+}
+
+
+.comment2 {
+ font-family: Open Sans, Helvetica;
+ fill: #757575;
+ text-align: center;
+
+
+}
+.commentcontainer{
+  width: 100%;
+}
+
+</style>
+<body>
+
+<!-- Initialize a select button -->
+<div class="title">
+<p>Así ha crecido el número de días de más de 30º en verano en...
+<select id="selectButton" class="dropdown"></select></p>
+</div>
+
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+<!-- Color Scale -->
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+
+<script>
+
+
+// set the dimensions and margins of the graph
+var margin = {top: 10, right: 50, bottom: 250, left: 10},
+    width = parseInt(d3.select("#my_dataviz").style("width")) - margin.left - margin.right,
+    height = parseInt(d3.select("#my_dataviz").style("height")) - margin.top - margin.bottom;
+  
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+
+
+//Read the data
+d3.csv("https://raw.githubusercontent.com/VangData/prova/master/datos4.csv", function(data) {
+
+     data.forEach(function(d) {
+      d.date = d3.timeParse("%Y")(d.date);
+      d.value = +d.value;
+
+  
+  });
+
+    // List of groups (here I have one group per column)
+    var allGroup = d3.map(data, function(d){return(d.lugar)}).keys()
+
+    
+
+    // add the options to the button
+    d3.select("#selectButton")
+      .selectAll('myOptions')
+     	.data(allGroup)
+      .enter()
+    	.append('option')
+      .attr('class', 'op')
+      .text(function (d) { return d; }) // text showed in the menu
+      .attr("value", function (d) { return d; })
+
+   
+
+  var comment2 = svg
+  .selectAll("text")
+  .data(data.filter(function(d){return d.lugar==allGroup[0]}))
+  .enter()
+  .append("text")
+    .text(function(d) { return d.lugar2  + d.calle + d.provincia + d.frase1 + d.dato1 + d.frase2 + d.dato2;})
+    .attr("fill", "#323232")
+    .attr("class","comment2")
+    .attr("x", 10)
+    .attr("y", 400)
+
+    .call(wrap, width);
+
+
+
+    // Add X axis --> it is a date format
+    var x = d3.scaleTime()
+      .domain(d3.extent(data, function(d) { return d.date; }))
+      .range([ 0, width ]);
+    svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .attr("class", "xcustom")
+      .call(d3.axisBottom(x));
+
+    // Add Y axis
+    var y = d3.scaleLinear()
+      .domain([0, d3.max(data, function(d) { return +d.value; })])
+      .range([ height, 0 ]);
+    svg.append("g")
+      .attr("class", "ycustom")
+      .call(d3.axisRight(y)
+      .tickSize(width + 5)
+      );
+
+// Add a tooltip div. Here I define the general feature of the tooltip: stuff that do not depend on the data point.
+  // Its opacity is set to 0: we don't see it by default.
+  var tooltip = d3.select("#my_dataviz")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "#323232")
+    .style("border-radius", "5px")
+    .style("padding", "10px")
+
+
+
+
+
+  // A function that change this tooltip when the user hover a point.
+  // Its opacity is set to 1: we can now see it. Plus it set the text and position of tooltip depending on the datapoint (d)
+  var mouseover = function(d) {
+    tooltip
+      .style("opacity", 1)
+    d3.select(this)
+      .style("stroke", "none")
+      .style("opacity", 1)
+      .style("fill", "#e63200")
+
+  }
+
+  var mousemove = function(d) {
+    tooltip
+    .html("Verano de " + d.date2 + " : " + d.value + " días")
+    .style("left", d3.event.pageX + 10 + "px")
+    .style("top", d3.event.pageY + 10 + "px")
+    d3.select(this)
+      .style("stroke", "none")
+      .style("opacity", 1)
+     
+      
+                
+  }
+
+
+  // A function that change this tooltip when the leaves a point: just need to set opacity to 0 again
+  var mouseleave = function(d) {
+    tooltip
+      .transition()
+      .duration(200)
+      .style("opacity", 0)
+    d3.select(this)
+      .style("stroke", "none")
+      .style("opacity", 0.7)
+      .style("fill", "#f56942")
+      .attr("r", 4)
+      .style("opacity", 0.7 )
+  }
+    // Initialize line with first group of the list
+    var line = svg
+      .append('g')
+      .append("path")
+        .datum(data.filter(function(d){return d.lugar==allGroup[0]}))
+        .attr("d", d3.line()
+          .x(function(d) { return x(d.date) })
+          .y(function(d) { return y(+d.value) })
+          .curve(d3.curveMonotoneX)
+        )
+        .attr("stroke", "#f56942")
+        .style("stroke-width", 2)
+        .style("fill", "none")
+
+
+    // Initialize dots with group a
+
+
+   var dot = svg
+      .selectAll('circle')
+      .data(data.filter(function(d){return d.lugar==allGroup[0]}))
+      .enter()
+      .append('circle')
+        .attr("cx", function(d) { return x(d.date) })
+        .attr("cy", function(d) { return y(+d.value) })
+        .attr("r", 4)
+        .style("fill", "#f56942")
+        .style("stroke", "fff")
+        .style("opacity", "0.7")
+        .attr("class","dots")
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave)
+
+
+ 
+
+ 
+function wrap (text, width) {
+
+  text.each(function() {
+
+    var breakChars = ['/', '&', '-'],
+      text = d3.select(this),
+      textContent = text.text(),
+      spanContent;
+
+    breakChars.forEach(char => {
+      // Add a space after each break char for the function to use to determine line breaks
+      textContent = textContent.replace(char, char + ' ');
+    });
+
+    var words = textContent.split(/\s+/).reverse(),
+      word,
+      line = [],
+      lineNumber = 0,
+      lineHeight = 1.4, // ems
+      multi = 0.4,
+      x = text.attr('x'),
+      y = text.attr('y'),
+      dy = parseFloat(text.attr('dy') || 0),
+      tspan = text.text(null).append('tspan').attr('x', x).attr('y', y).attr('dy', dy + 'em');
+
+    while (word = words.pop()) {
+      line.push(word);
+      tspan.text(line.join(' '));
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop();
+        spanContent = line.join(' ');
+        breakChars.forEach(char => {
+          // Remove spaces trailing breakChars that were added above
+          spanContent = spanContent.replace(char + ' ', char);
+        });
+        tspan.text(spanContent);
+        line = [word];
+        tspan = text.append('tspan').attr('x', x).attr('y', y).attr('dy', ++lineNumber * lineHeight + dy + 'em').text(word);
+      }
+    }
+  });
+
+}   
+    // A function that update the chart
+    function update(selectedGroup) {
+
+      // Create new data with the selection?
+      var dataFilter = data.filter(function(d){return d.lugar==selectedGroup})
+
+      // Give these new data to update line
+      line
+          .datum(dataFilter)
+          .transition()
+          .duration(1000)
+          .attr("d", d3.line()
+            .x(function(d) { return x(d.date) })
+            .y(function(d) { return y(+d.value) })
+            .curve(d3.curveMonotoneX)
+          )
+          .attr("stroke", "#f56942")
+
+      svg.selectAll('.comment2').remove();
+
+      svg.selectAll('.comment2')
+      .exit()
+      .data(dataFilter)
+      .enter()
+      .append("text")
+      .text(function(d) { return  d.lugar2  + d.calle + d.provincia + d.frase1 + d.dato1 + d.frase2 + d.dato2;})
+      .attr("fill", "#323232")
+      .attr("x", 10)
+      .attr("y", 420)
+      .attr("class", "comment2")
+      .attr("text-anchor", "start")
+      .call(wrap, width)
+      
+
+      svg.selectAll(".dots").remove();
+
+      svg.selectAll(".dots")
+      .data(dataFilter)
+      .enter()
+      .append("circle")
+      .style("fill", "#f56942")
+      .style("opacity", 0)
+      .on("mouseover", mouseover)
+      .on("mousemove", mousemove)
+      .on("mouseleave", mouseleave)
+      .attr("cx", function(d) { return x(d.date) })
+      .attr("cy", function(d) { return y(+d.value) })
+      .transition()
+        .duration(1000)
+        .style("opacity", "0.7")
+      .attr("class", "dots")
+      .attr("cx", function(d) { return x(d.date) })
+      .attr("cy", function(d) { return y(+d.value) })
+      .attr("r", 4)
+        .style("fill", "#f56942")
+        .style("stroke", "fff")
+        .style("opacity", "0.7")
+      .on("mouseover", mouseover)
+      .on("mousemove", mousemove)
+      .on("mouseleave", mouseleave)
+
+
+
+
+ 
+          
+    }
+
+
+
+    // When the button is changed, run the updateChart function
+    d3.select("#selectButton").on("change", function(d) {
+        // recover the option that has been chosen
+        var selectedOption = d3.select(this).property("value")
+
+        // run the updateChart function with this selected option
+        update(selectedOption)
+    })
+
+})
+
+
+</script>
+</body>
