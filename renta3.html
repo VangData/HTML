@@ -1,0 +1,590 @@
+<html lang="es">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Voto Ciudadanos 2016</title>
+<style>
+     @import url('https://fonts.googleapis.com/css?family=Open+Sans:200,400,600,700,800');
+    *{margin: 0; padding: 0;}
+#map {
+    width: 100%;
+    height: 550px;
+}
+.legend {
+  background-color: #ffffff;
+    border-radius: 3px;
+    bottom: 10px;
+    padding: 7px;
+    position: absolute;
+    right: 10px;
+    z-index: 1;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 0 10px 2px rgba(0,0,0,.1);
+}
+.legend clearfix {
+    background-color: #ffffff;
+    border-radius: 3px;
+    bottom: 10px;
+    padding: 7px 10px 8px 5px;
+    position: absolute;
+    right: 0px;
+    z-index: 1;
+    width: 200px;
+    text-align: left;
+    box-shadow: 0 0 10px 2px rgba(0,0,0,.1);
+}
+.legend h1 {
+    font-size: 10px;
+    font-family: OpenSans-Semibold, Open Sans;
+    font-weight: 600;
+    fill: #aeaeaf;
+    margin: 0px 0 -11px 0;
+    text-transform: uppercase;
+    text-align: left;
+}
+.legend span {
+    float: left;
+    height: 10px;
+    width: 15.9%;
+    font-size: 9px;
+    color: #aeaeaf;
+    margin-bottom: 5px;
+    padding: 2px;
+}
+.legend label {
+    font-size: 10px;
+    font-family: OpenSans-Semibold, Open Sans;
+    fill: #aeaeaf;
+    padding: 0 5px;
+    text-align: left;
+}
+</style>
+
+<script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+<script type="text/javascript" src="https://rawcdn.githack.com/VangData/prova/303a4dd5dd7d718c2ecab4b40035ce5baa53e662/junto_cartodb_1_mergeb.js"></script>
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.0.0/mapbox-gl-geocoder.min.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.0.0/mapbox-gl-geocoder.css' type='text/css' />
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+<script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.css' rel='stylesheet' />
+<body>
+
+<div id='map'>
+  <div id='legend'>
+
+  <nav class='legend clearfix'>
+<h1>Renta media anual del hogar (€):</h1></br>
+   
+    <span style='background:#b2182b;opacity:0.7;'></span>
+    <span style='background:#ef8a62;opacity:0.7;'></span>
+    <span style='background:#fddbc7;opacity:0.7;'></span>
+    <span style='background:#67a9cf;opacity:0.7;'></span>
+    <span style='background:#2166ac;opacity:0.7;'></span>
+    <label>10mil</label>
+    <label>20mil</label>
+    <label>30mil</label>
+    <label>40mil</label>
+    <label>+50mil</label>
+    
+
+
+</nav></div></div><div id='geocoder' class='geocoder'></div>
+
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoibGF1cjA1IiwiYSI6ImNpbmtmM2FjazAwODF2eG0yNjhteTcxdHIifQ.l7uzjVe2b1L8dHh_Z9JjoQ';
+var map = new mapboxgl.Map({
+container: 'map', // container id
+style: 'mapbox://styles/laur05/cjuvi3xkc8dik1fmtpwe3xjhh', 
+center:  [-4.0222, 39.5], // starting position [lng, lat]
+zoom: 4.7,// starting zoom
+minZoom: 2,
+maxZoom: 12,
+attributionControl: false,
+//maxBounds: [[-19,27],[9,45] ]
+});
+var hoveredStateId =  null;
+var searched_lngLat = null;
+const to_ES = (number, digits=0) => number.toLocaleString("es", {
+          minimumFractionDigits: digits, 
+          maximumFractionDigits: digits} )
+map.on('load', function () {
+// Add a layer showing the state polygons.
+map.addSource("resultados", {
+    type: 'vector',
+    url: 'mapbox://laur05.3lxx5chp',
+});
+map.addSource("resultados1b", {
+    type: 'vector',
+    url: 'mapbox://laur05.5uaerpqn',
+});
+map.addSource("resultados2", {
+    type: 'vector',
+    url: 'mapbox://laur05.46cxvs8h',
+});
+map.addSource("resultados2b", {
+    type: 'vector',
+    url: 'mapbox://laur05.1skekopd',
+});
+map.addSource("resultados3", {
+    type: 'vector',
+    url: 'mapbox://laur05.axamdfqs',
+});
+map.addSource("resultados3b", {
+    type: 'vector',
+    url: 'mapbox://laur05.105fxqni',
+});
+var layers = map.getStyle().layers;
+// Find the index of the first symbol layer in the map style
+//capa1
+map.addLayer({
+'id': 'tiles-fills',
+'type': 'fill',
+'renderingMode': '2d',
+'source': 'resultados',
+'source-layer': 'A-d1ypjp',
+'paint': {
+ 'fill-color': ["interpolate", ["linear", 1],
+                        ["get", "mihogares2016"],
+                        0, "#d6d6d6",
+                        1, "#b2182b",
+                        20000, "#b2182b",
+                        20001, "#ef8a62",
+                        30000, "#ef8a62",
+                        30001, "#fddbc7",
+                        40000, "#fddbc7",
+                        40001, "#67a9cf",
+                        50000, "#67a9cf",
+                        50001, "#2166ac"
+                    ],
+    'fill-opacity': 0.7
+}}, "admin");
+map.addLayer({
+'id': 'tiles-borders',
+'type': 'line',
+'renderingMode': '2d',
+'source': 'resultados',
+'source-layer': 'A-d1ypjp',
+'paint': {
+'line-color': "white",
+        "line-width":  0}
+    }, "admin");
+//capa1A
+map.addLayer({
+'id': 'tiles-fills1',
+'type': 'fill',
+'renderingMode': '2d',
+'source': 'resultados1b',
+'source-layer': 'A2-05qnce',
+'paint': {
+ 'fill-color': ["interpolate", ["linear", 1],
+                        ["get", "mihogares2016"],
+                        0, "#d6d6d6",
+                        1, "#b2182b",
+                        20000, "#b2182b",
+                        20001, "#ef8a62",
+                        30000, "#ef8a62",
+                        30001, "#fddbc7",
+                        40000, "#fddbc7",
+                        40001, "#67a9cf",
+                        50000, "#67a9cf",
+                        50001, "#2166ac"
+                    ],
+  'fill-opacity': 0.7
+    
+}}, "admin");
+map.addLayer({
+'id': 'tiles-borders1',
+'type': 'line',
+'renderingMode': '2d',
+'source': 'resultados1b',
+'source-layer': 'A2-05qnce',
+'paint': {
+'line-color': "white",
+        "line-width":  0}
+    }, "admin");
+//capa2
+map.addLayer({
+'id': 'tiles-fills2',
+'type': 'fill',
+'renderingMode': '2d',
+'source': 'resultados2',
+'source-layer': 'B-cimojf',
+'paint': {
+ 'fill-color': ["interpolate", ["linear", 1],
+                        ["get", "mihogares2016"],
+                        0, "#d6d6d6",
+                        1, "#b2182b",
+                        20000, "#b2182b",
+                        20001, "#ef8a62",
+                        30000, "#ef8a62",
+                        30001, "#fddbc7",
+                        40000, "#fddbc7",
+                        40001, "#67a9cf",
+                        50000, "#67a9cf",
+                        50001, "#2166ac"
+                    ],
+    'fill-opacity': 0.7
+}}, "admin");
+map.addLayer({
+'id': 'tiles-borders2',
+'type': 'line',
+'renderingMode': '2d',
+'source': 'resultados2',
+'source-layer': 'B-cimojf',
+'paint': {
+'line-color': "white",
+        "line-width":  0}
+    }, "admin");
+//capa2b
+map.addLayer({
+'id': 'tiles-fills2b',
+'type': 'fill',
+'renderingMode': '2d',
+'source': 'resultados2b',
+'source-layer': 'B2-9v44ml',
+'paint': {
+ 'fill-color': ["interpolate", ["linear", 1],
+                        ["get", "mihogares2016"],
+                        0, "#d6d6d6",
+                        1, "#b2182b",
+                        20000, "#b2182b",
+                        20001, "#ef8a62",
+                        30000, "#ef8a62",
+                        30001, "#fddbc7",
+                        40000, "#fddbc7",
+                        40001, "#67a9cf",
+                        50000, "#67a9cf",
+                        50001, "#2166ac"
+                    ],
+    'fill-opacity': 0.7
+}}, "admin");
+map.addLayer({
+'id': 'tiles-borders2b',
+'type': 'line',
+'renderingMode': '2d',
+'source': 'resultados2b',
+'source-layer': 'B2-9v44ml',
+'paint': {
+'line-color': "white",
+        "line-width":  0}
+    }, "admin");
+//capa3
+map.addLayer({
+'id': 'tiles-fills3',
+'type': 'fill',
+'renderingMode': '2d',
+'source': 'resultados3',
+'source-layer': 'C-c9hmnn',
+'paint': {
+ 'fill-color': ["interpolate", ["linear", 1],
+                        ["get", "mihogares2016"],
+                        0, "#d6d6d6",
+                        1, "#b2182b",
+                        20000, "#b2182b",
+                        20001, "#ef8a62",
+                        30000, "#ef8a62",
+                        30001, "#fddbc7",
+                        40000, "#fddbc7",
+                        40001, "#67a9cf",
+                        50000, "#67a9cf",
+                        50001, "#2166ac"
+                    ],
+    'fill-opacity': 0.7
+}}, "admin");
+map.addLayer({
+'id': 'tiles-borders3',
+'type': 'line',
+'renderingMode': '2d',
+'source': 'resultados3',
+'source-layer': 'C-c9hmnn',
+'paint': {
+'line-color': "white",
+        "line-width":  0}
+    }, "admin");
+//capa3b
+map.addLayer({
+'id': 'tiles-fills3b',
+'type': 'fill',
+'renderingMode': '2d',
+'source': 'resultados3b',
+'source-layer': 'C2-67kn34',
+'paint': {
+ 'fill-color': ["interpolate", ["linear", 1],
+                        ["get", "mihogares2016"],
+                        0, "#d6d6d6",
+                        1, "#b2182b",
+                        20000, "#b2182b",
+                        20001, "#ef8a62",
+                        30000, "#ef8a62",
+                        30001, "#fddbc7",
+                        40000, "#fddbc7",
+                        40001, "#67a9cf",
+                        50000, "#67a9cf",
+                        50001, "#2166ac"
+                    ],
+    'fill-opacity': 0.7
+}}, "admin");
+map.addLayer({
+'id': 'tiles-borders3b',
+'type': 'line',
+'renderingMode': '2d',
+'source': 'resultados3b',
+'source-layer': 'C2-67kn34',
+'paint': {
+'line-color': "white",
+        "line-width":  0}
+    }, "admin");
+// Add zoom and rotation controls to the map.
+var nav = new mapboxgl.NavigationControl( {showCompass:false});
+map.addControl(nav, 'top-left');
+// disable map zoom when using scroll
+map.scrollZoom.disable();
+var geocoder = new MapboxGeocoder({
+//country: 'es',
+accessToken: mapboxgl.accessToken,
+mapboxgl: mapboxgl,
+types: 'address',
+placeholder: 'Busca tu calle',
+zoom: 12,
+});
+map.addControl(geocoder, 'top-right');
+var popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+}); 
+
+   geocoder.on('result', function(ev) {
+      searched_lngLat = mapboxgl.LngLat.convert(ev.result.center)      
+    });
+//tooltip1
+   map.on('mousemove', 'tiles-fills', function(e) {
+    if (e.features.length > 0) {
+          if (hoveredStateId) {          
+            map.setFeatureState({ source: 'resultados', 
+                                  sourceLayer: 'A-d1ypjp',
+                                  id: hoveredStateId}, { hover: false});
+          }
+          hoveredStateId = e.features[0].id;
+          map.setFeatureState({ source: 'resultados', 
+                              sourceLayer: 'A-d1ypjp',
+                              id: hoveredStateId}, { hover: true});
+        }
+       map.getCanvas().style.cursor = 'pointer';
+ 
+        //var coordinates = e.features[0].geometry.coordinates.slice();
+        var Vox = e.features[0].properties.mihogares2016.toLocaleString();
+        var villa = e.features[0].properties.boMunicipio.toLocaleString();
+        
+        
+         popup.setLngLat(e.lngLat)
+            .setHTML("<div style='color:black;font-size:12px;font-family: OpenSans-bold, Open Sans;padding-bottom:3px'><b>" + villa + "</b></div><hr><div style='padding-top: 4px; font-size: 12px;font-family: Open Sans;text-align: center;'>" + Vox + "€</div>")
+            .addTo(map);
+  });   
+        // Change the cursor style as a UI indicator.
+        
+        // Display a popup with the name of the county
+  map.on('mouseleave', 'tiles-fills', function() {
+      map.getCanvas().style.cursor = '';
+        popup.remove();
+        if (hoveredStateId) {          
+          map.setFeatureState({ source: 'resultados', 
+                                sourceLayer: 'A-d1ypjp',
+                                id: hoveredStateId}, { hover: false});
+        }
+        hoveredStateId = null;
+      });
+//tooltip1b
+   map.on('mousemove', 'tiles-fills1', function(e) {
+    if (e.features.length > 0) {
+          if (hoveredStateId) {          
+            map.setFeatureState({ source: 'resultados1b', 
+                                  sourceLayer: 'A2-05qnce',
+                                  id: hoveredStateId}, { hover: false});
+          }
+          hoveredStateId = e.features[0].id;
+          map.setFeatureState({ source: 'resultados1b', 
+                              sourceLayer: 'A2-05qnce',
+                              id: hoveredStateId}, { hover: true});
+        }
+       map.getCanvas().style.cursor = 'pointer';
+ 
+        //var coordinates = e.features[0].geometry.coordinates.slice();
+        var Vox = e.features[0].properties.mihogares2016.toLocaleString();
+        var villa = e.features[0].properties.boMunicipio.toLocaleString();
+        
+        
+         popup.setLngLat(e.lngLat)
+            .setHTML("<div style='color:black;font-size:12px;font-family: OpenSans-bold, Open Sans;padding-bottom:3px'><b>" + villa + "</b></div><hr><div style='padding-top: 4px; font-size: 12px;font-family: Open Sans;text-align: center;'>" + Vox + " € </div>")
+            .addTo(map);
+  });   
+        // Change the cursor style as a UI indicator.
+        
+        // Display a popup with the name of the county
+  map.on('mouseleave', 'tiles-fills1b', function() {
+      map.getCanvas().style.cursor = '';
+        popup.remove();
+        if (hoveredStateId) {          
+          map.setFeatureState({ source: 'resultados2', 
+                                sourceLayer: 'A2-05qnce',
+                                id: hoveredStateId}, { hover: false});
+        }
+        hoveredStateId = null;
+      });
+  //tooltip2
+   map.on('mousemove', 'tiles-fills2', function(e) {
+    if (e.features.length > 0) {
+          if (hoveredStateId) {          
+            map.setFeatureState({ source: 'resultados2', 
+                                  sourceLayer: 'B-cimojf',
+                                  id: hoveredStateId}, { hover: false});
+          }
+          hoveredStateId = e.features[0].id;
+          map.setFeatureState({ source: 'resultados2', 
+                              sourceLayer: 'B-cimojf',
+                              id: hoveredStateId}, { hover: true});
+        }
+       map.getCanvas().style.cursor = 'pointer';
+ 
+        //var coordinates = e.features[0].geometry.coordinates.slice();
+        var Vox = e.features[0].properties.mihogares2016.toLocaleString();
+        var villa = e.features[0].properties.boMunicipio.toLocaleString();
+        
+        
+         popup.setLngLat(e.lngLat)
+            .setHTML("<div style='color:black;font-size:12px;font-family: OpenSans-bold, Open Sans;padding-bottom:3px'><b>" + villa + "</b></div><hr><div style='padding-top: 4px; font-size: 12px;font-family: Open Sans;text-align: center;'>" + Vox + " € </div>")
+            .addTo(map);
+  });   
+        // Change the cursor style as a UI indicator.
+        
+        // Display a popup with the name of the county
+  map.on('mouseleave', 'tiles-fills2', function() {
+      map.getCanvas().style.cursor = '';
+        popup.remove();
+        if (hoveredStateId) {          
+          map.setFeatureState({ source: 'resultados2', 
+                                sourceLayer: 'B-cimojf',
+                                id: hoveredStateId}, { hover: false});
+        }
+        hoveredStateId = null;
+      });
+    //tooltip2b
+   map.on('mousemove', 'tiles-fills2b', function(e) {
+    if (e.features.length > 0) {
+          if (hoveredStateId) {          
+            map.setFeatureState({ source: 'resultados2b', 
+                                  sourceLayer: 'B2-9v44ml',
+                                  id: hoveredStateId}, { hover: false});
+          }
+          hoveredStateId = e.features[0].id;
+          map.setFeatureState({ source: 'resultados2b', 
+                              sourceLayer: 'B2-9v44ml',
+                              id: hoveredStateId}, { hover: true});
+        }
+       map.getCanvas().style.cursor = 'pointer';
+ 
+        //var coordinates = e.features[0].geometry.coordinates.slice();
+        var Vox = e.features[0].properties.mihogares2016.toLocaleString();
+        var villa = e.features[0].properties.boMunicipio.toLocaleString();
+        
+        
+         popup.setLngLat(e.lngLat)
+            .setHTML("<div style='color:black;font-size:12px;font-family: OpenSans-bold, Open Sans;padding-bottom:3px'><b>" + villa + "</b></div><hr><div style='padding-top: 4px; font-size: 12px;font-family: Open Sans;text-align: center;'>" + Vox + " € </div>")
+            .addTo(map);
+  });   
+        // Change the cursor style as a UI indicator.
+        
+        // Display a popup with the name of the county
+  map.on('mouseleave', 'tiles-fills2b', function() {
+      map.getCanvas().style.cursor = '';
+        popup.remove();
+        if (hoveredStateId) {          
+          map.setFeatureState({ source: 'resultados2b', 
+                                sourceLayer: 'B2-9v44ml',
+                                id: hoveredStateId}, { hover: false});
+        }
+        hoveredStateId = null;
+      });
+      //tooltip3
+   map.on('mousemove', 'tiles-fills3', function(e) {
+    if (e.features.length > 0) {
+          if (hoveredStateId) {          
+            map.setFeatureState({ source: 'resultados3', 
+                                  sourceLayer: 'C-c9hmnn',
+                                  id: hoveredStateId}, { hover: false});
+          }
+          hoveredStateId = e.features[0].id;
+          map.setFeatureState({ source: 'resultados3', 
+                              sourceLayer: 'C-c9hmnn',
+                              id: hoveredStateId}, { hover: true});
+        }
+       map.getCanvas().style.cursor = 'pointer';
+ 
+        //var coordinates = e.features[0].geometry.coordinates.slice();
+        var Vox = e.features[0].properties.mihogares2016.toLocaleString();
+        var villa = e.features[0].properties.boMunicipio.toLocaleString();
+        
+        
+         popup.setLngLat(e.lngLat)
+            .setHTML("<div style='color:black;font-size:12px;font-family: OpenSans-bold, Open Sans;padding-bottom:3px'><b>" + villa + "</b></div><hr><div style='padding-top: 4px; font-size: 12px;font-family: Open Sans;text-align: center;'>" + Vox + " € </div>")
+            .addTo(map);
+  });   
+        // Change the cursor style as a UI indicator.
+        
+        // Display a popup with the name of the county
+  map.on('mouseleave', 'tiles-fills3', function() {
+      map.getCanvas().style.cursor = '';
+        popup.remove();
+        if (hoveredStateId) {          
+          map.setFeatureState({ source: 'resultados3', 
+                                sourceLayer: 'C-c9hmnn',
+                                id: hoveredStateId}, { hover: false});
+        }
+        hoveredStateId = null;
+      });
+        //tooltip3b
+   map.on('mousemove', 'tiles-fills3b', function(e) {
+    if (e.features.length > 0) {
+          if (hoveredStateId) {          
+            map.setFeatureState({ source: 'resultados3b', 
+                                  sourceLayer: 'C2-67kn34',
+                                  id: hoveredStateId}, { hover: false});
+          }
+          hoveredStateId = e.features[0].id;
+          map.setFeatureState({ source: 'resultados3b', 
+                              sourceLayer: 'C2-67kn34',
+                              id: hoveredStateId}, { hover: true});
+        }
+       map.getCanvas().style.cursor = 'pointer';
+ 
+        //var coordinates = e.features[0].geometry.coordinates.slice();
+        var Vox = e.features[0].properties.mihogares2016.toLocaleString();
+        var villa = e.features[0].properties.boMunicipio.toLocaleString();
+        
+        
+         popup.setLngLat(e.lngLat)
+            .setHTML("<div style='color:black;font-size:12px;font-family: OpenSans-bold, Open Sans;padding-bottom:3px'><b>" + villa + "</b></div><hr><div style='padding-top: 4px; font-size: 12px;font-family: Open Sans;text-align: center;'>" + Vox + " € </div>")
+            .addTo(map);
+  });   
+        // Change the cursor style as a UI indicator.
+        
+        // Display a popup with the name of the county
+  map.on('mouseleave', 'tiles-fills3b', function() {
+      map.getCanvas().style.cursor = '';
+        popup.remove();
+        if (hoveredStateId) {          
+          map.setFeatureState({ source: 'resultados3b', 
+                                sourceLayer: 'C2-67kn34',
+                                id: hoveredStateId}, { hover: false});
+        }
+        hoveredStateId = null;
+      });
+});   
+</script>
+ 
+
+   
+	</body>
+</html>
