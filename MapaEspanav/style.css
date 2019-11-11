@@ -1,0 +1,254 @@
+  @import url('https://fonts.googleapis.com/css?family=Open+Sans:200,400,600,700,800');
+  *{margin: 0; padding: 0;}
+
+ 
+  
+  #map {
+    width: 100%;
+    height: 750px;
+  }
+
+  .mapboxgl-ctrl-top-right .mapboxgl-ctrl {
+    margin: 0px 10px 0 0 !important;
+  }
+
+  .mapboxgl-popup{
+    opacity: 0.95;
+  }
+
+  /* COPIAR2 INICIO */
+  #cabecera{
+    width: 100%;
+    height: 100px;
+    margin-bottom: 5px;
+  }
+  /* FIN COPIAR2 */
+
+  #textoExplicativo{
+    font-size: 12px;
+    font-family: Open Sans;
+    fill: #aeaeaf;
+    margin: auto;
+    margin-top: 20px;
+    text-align: center;
+    color: #565454;
+  }
+  
+
+  .legend {
+    background-color: #ffffff;
+    border-radius: 3px;
+    bottom: 5px;
+    padding: 7px;
+    position: absolute;
+    right: 10px;
+    z-index: 1;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 0 10px 2px rgba(0,0,0,.1);
+  }
+  .legend clearfix {
+    background-color: #ffffff;
+    border-radius: 3px;
+    bottom: 5px;
+    padding: 7px 10px 8px 5px;
+    position: absolute;
+    right: 0px;
+    z-index: 1;
+    width: 200px;
+    text-align: left;
+    box-shadow: 0 0 10px 2px rgba(0,0,0,.1);
+  }
+  .legend h1 {
+    font-size: 10px;
+    font-family: OpenSans-Semibold, Open Sans;
+    font-weight: 600;
+    /*fill: #aeaeaf;*/
+    margin: 0px 0 -11px 0;
+    text-transform: uppINDEPESase;
+    text-align: left;
+  }
+  .legend span {
+    float: left;
+    height: 10px;
+    width: 18%;
+    font-size: 9px;
+    /*color: #00ff00;*/
+    margin-bottom: 5px;
+    padding: 2px;
+  }
+  .legend label {
+    font-size: 10px;
+    font-family: OpenSans-Semibold, Open Sans;
+    /*fill: #aeaeaf;*/
+    padding: 0 7px;
+    text-align: left;
+  }
+
+  #menuPartidos {
+    z-index: 1;
+    margin: auto;
+    top: 10px;
+    margin-bottom: 25px;
+    left: 0;
+    right: 0;
+    position: relative;
+    width: 100%;
+    height: 80px;
+    font-family: 'Open Sans', sans-serif;
+    text-align: center;
+  }
+
+  #menuPartidos a {
+    list-style-type: none;
+    overflow: hidden;
+    position: relative;
+    float: none;
+    margin: auto 20px 10px auto;
+    font-size: 13px;
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    background-repeat: no-repeat;
+    border-radius: 30px;
+    text-align: center;
+    color: rgba(240, 248, 255, 0);
+    padding-top: 0px;
+  }
+
+  /* TODOS */
+  #menuPartidos a.desactive {
+    opacity: 0.3;
+    background-color: hsla(0, 0%, 70%, 1);
+  }
+
+  #menuPartidos a.active {
+    opacity: 1;
+  }
+
+  /* TODOS */
+  #menuPartidos a:nth-child(1){
+    background-image: url("./logos/todos.svg");
+  }
+
+  #menuPartidos a:nth-child(1).active{
+    background-color: #565454;
+  }
+
+  #menuPartidos a:nth-child(1).desactive:hover {
+    opacity: 1;
+    background-color: #565454;
+  }
+
+  #menuPartidos a:nth-child(1).desactive {
+    opacity: 1;
+  }
+
+  /* PSOE */
+  #menuPartidos a:nth-child(2){
+    background-image: url("./logos/Logotipo_del_PSOE.svg");
+  }
+
+  #menuPartidos a:nth-child(2).active{
+    background-color: #cc001e;
+  }
+
+  #menuPartidos a:nth-child(2).desactive:hover {
+    opacity: 1;
+    background-color: #cc001e;
+  }
+
+  /* PP */
+  #menuPartidos a:nth-child(3){
+    background-image: url("./logos/PP_icono_2019-01.svg");
+  }
+
+  #menuPartidos a:nth-child(3).active{
+     background-color: #3dc8ff;
+  }
+
+  #menuPartidos a:nth-child(3).desactive:hover {
+    opacity: 1;
+    background-color: #3dc8ff;
+  }
+
+   /* Cs */
+  #menuPartidos a:nth-child(4){
+    background-image: url("./logos/Ciudadanos_logo_2017.svg");
+  }
+
+  #menuPartidos a:nth-child(4).active{
+     background-color: #ff9324;
+  }
+
+  #menuPartidos a:nth-child(4).desactive:hover {
+    opacity: 1;
+    background-color: #ff9324;
+  }
+  /* PODEMOS */
+  #menuPartidos a:nth-child(5){
+    background-image: url("./logos/Logo_Unidas_Podemos.svg");
+  }
+
+  #menuPartidos a:nth-child(5).active{
+     background-color: #ad18ad;
+  }
+
+  #menuPartidos a:nth-child(5).desactive:hover {
+    opacity: 1;
+    background-color: #ad18ad;
+  }
+  /* VOX */
+  #menuPartidos a:nth-child(6){
+    background-image: url("./logos/VOX_logo.svg");
+  }
+
+  #menuPartidos a:nth-child(6).active{
+     background-color: #3c8c04;
+  }
+
+  #menuPartidos a:nth-child(6).desactive:hover {
+    opacity: 1;
+    background-color: #3c8c04;
+  }
+  
+  /* MAS PAIS */
+#menuPartidos a:nth-child(7){
+    background-image: url("./logos/Mas_Pais.svg");
+  }
+
+  #menuPartidos a:nth-child(7).active{
+     background-color: #00e6cc;
+  }
+
+  #menuPartidos a:nth-child(7).desactive:hover {
+    opacity: 1;
+    background-color: #00e6cc;
+  }
+
+  /* INDEPES */
+  #menuPartidos a:nth-child(8){
+    background-image: url("./logos/nacionalistas.svg");
+  }
+
+  #menuPartidos a:nth-child(8).active{
+     background-color: #565454;
+  }
+
+  #menuPartidos a:nth-child(8).desactive:hover {
+    opacity: 1;
+    background-color: #565454;
+  }
+
+
+  /* For mobile phones: */
+  @media only screen and (max-width: 500px) {
+    /* COPIAR2 INICIO*/
+    #cabecera{
+      margin-bottom: 55px; 
+    }
+    /* COPIAR2 FIN*/
+    #menuPartidos{
+      height: 125px;
+    }
+  }
