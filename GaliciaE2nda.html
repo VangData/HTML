@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Ganador 10-N</title>
+<style>
+     @import url('https://fonts.googleapis.com/css?family=Open+Sans:200,400,600,700,800');
+    *{margin: 0; padding: 0;}
+#map {
+    width: 100%;
+    height: 700px;
+}
+.legend {
+  background-color: #ffffff;
+    border-radius: 3px;
+    bottom: 10px;
+    padding: 7px;
+    position: absolute;
+    right: 10px;
+    z-index: 1;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 0 10px 2px rgba(0,0,0,.1);
+}
+.legend clearfix {
+    background-color: #ffffff;
+    border-radius: 3px;
+    bottom: 10px;
+    padding: 7px 10px 8px 5px;
+    position: absolute;
+    right: 0px;
+    z-index: 1;
+    width: 200px;
+    text-align: left;
+    box-shadow: 0 0 10px 2px rgba(0,0,0,.1);
+}
+.legend h1 {
+    font-size: 10px;
+    font-family: OpenSans-Semibold, Open Sans;
+    font-weight: 600;
+    fill: #aeaeaf;
+    margin: 0px 0 -11px 0;
+    text-transform: uppercase;
+    text-align: left;
+}
+.legend span {
+    float: left;
+    height: 10px;
+    width: 15.9%;
+    font-size: 9px;
+    color: #aeaeaf;
+    margin-bottom: 5px;
+    padding: 2px;
+}
+.legend label {
+    font-size: 10px;
+    font-family: OpenSans-Semibold, Open Sans;
+    fill: #aeaeaf;
+    padding: 0 5px;
+    text-align: left;
+}
+</style>
+
+<script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+<script type="text/javascript" src="https://rawcdn.githack.com/VangData/prova/303a4dd5dd7d718c2ecab4b40035ce5baa53e662/junto_cartodb_1_mergeb.js"></script>
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.0.0/mapbox-gl-geocoder.min.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.0.0/mapbox-gl-geocoder.css' type='text/css' />
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+<script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.css' rel='stylesheet' />
+<script src='https://cdn.rawgit.com/duroty/responsive/master/app.embed.js'></script>
+<body>
+
+<div id='map'>
+
+</nav></div></div><div id='geocoder' class='geocoder'></div>
+
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoibGF1cjA1IiwiYSI6ImNpbmtmM2FjazAwODF2eG0yNjhteTcxdHIifQ.l7uzjVe2b1L8dHh_Z9JjoQ';
+var map = new mapboxgl.Map({
+container: 'map', // container id
+style: 'mapbox://styles/laur05/cjuvi3xkc8dik1fmtpwe3xjhh', 
+center:  [-8.122, 42.5], // starting position [lng, lat]
+zoom: 7,// starting zoom
+minZoom: 1,
+maxZoom: 15,
+attributionControl: false,
+
+});
+var hoveredStateId =  null;
+var searched_lngLat = null;
+const to_ES = (number, digits=0) => number.toLocaleString("es", {
+          minimumFractionDigits: digits, 
+          maximumFractionDigits: digits} )
+
+map.on('load', function () {
+// Add a layer showing the state polygons.
+map.addSource("resultados", {
+    type: 'vector',
+    url: 'mapbox://laur05.9jn4ipk2',
+});
+var layers = map.getStyle().layers;
+// Find the index of the first symbol layer in the map style
+map.addLayer({
+'id': 'tiles-fills',
+'type': 'fill',
+'renderingMode': '2d',
+'source': 'resultados',
+'source-layer': 'forcesGAL2020',
+'filter': ['>', 'Perc_PrimeraForca', -1],
+'paint': {
+'fill-color': ["match", ["get","Nom_SegonaForca"],
+        "PSOE", "#cc001e",
+        "PP", "#3dc8ff",
+        "JxCAT", "#023382",
+        "Bildu", "#95ab6a",
+        "ERC", "#e8c60b",
+        "Cs", "#ff9324",
+        "CC", "#e8de74",
+        "CUP", "#e8de74",
+        "Podemos", "#ad18ad",
+        "VOX", "#52b80b",
+        "BNG", "#b5f3f7",
+        "PNV", "#008c7b",
+        "TERUEL EXISTE", "#094f1c",
+        "CP Melilla", "#094f1c",
+        "MASPAIS", "#00e6cc",
+        "PRC", "#3236a8",
+        "#d6d6d6"],
+'fill-opacity': ["interpolate", ["linear", 100], ["get", "Perc_SegonaForca"],
+        0.00, 0.05,
+        5, 0.2,
+        10, 0.4,
+        30, 0.6,
+        40, 0.8,
+        50, 1.0]
+}}, "admin");
+map.addLayer({
+'id': 'tiles-borders',
+'type': 'line',
+'renderingMode': '2d',
+'source': 'resultados',
+'source-layer': 'forcesGAL2020',
+'paint': {
+"line-color": ["case", ["boolean", ["feature-state", "hover"], false], "black", "white"],
+            "line-width": ["case", ["boolean", ["feature-state", "hover"], false], 2, 0]}
+    });
+// Add zoom and rotation controls to the map.
+var nav = new mapboxgl.NavigationControl( {showCompass:false});
+map.addControl(nav, 'top-left');
+// disable map zoom when using scroll
+map.scrollZoom.disable();
+var geocoder = new MapboxGeocoder({
+countries: 'es',
+accessToken: mapboxgl.accessToken,
+mapboxgl: mapboxgl,
+types: 'region, place, locality, neighborhood, address',
+placeholder: 'Busca tu municipio',
+zoom: 15,
+});
+map.addControl(geocoder, 'top-right');
+var popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+}); 
+   map.on('mousemove', 'tiles-fills', function(e) {
+    if (e.features.length > 0) {
+          if (hoveredStateId) {          
+            map.setFeatureState({ source: 'resultados', 
+                                  sourceLayer: 'forcesGAL2020',
+                                  id: hoveredStateId}, { hover: false});
+          }
+          hoveredStateId = e.features[0].id;
+          map.setFeatureState({ source: 'resultados', 
+                              ourceLayer: 'forcesGAL2020',
+                              id: hoveredStateId}, { hover: true});
+
+        }
+       map.getCanvas().style.cursor = 'pointer';
+ 
+                 var colorganador = e.features[0].properties.Nom_PrimeraForca == 'PSOE' ? "#cc001e": e.features[0].properties.Nom_PrimeraForca == 'PP' ? "#026ca5": 
+                e.features[0].properties.Nom_PrimeraForca == 'BNG' ? "#b5f3f7":e.features[0].properties.Nom_PrimeraForca == 'JxCAT' ? "#023382":e.features[0].properties.Nom_PrimeraForca == 'Bildu' ? "#95ab6a": 
+                e.features[0].properties.Nom_PrimeraForca == 'ERC' ? "#e8c60b":e.features[0].properties.Nom_PrimeraForca == 'cs' ? "#d57928":e.features[0].properties.Nom_PrimeraForca == 'CC' ? "#e8de74":e.features[0].properties.Nom_PrimeraForca == 'Podemos' ? "#8e244f":e.features[0].properties.Nom_PrimeraForca == 'VOX' ? "#9cc628":e.features[0].properties.Nom_PrimeraForca == 'MASPAIS' ? "#78e4b9":e.features[0].properties.Nom_PrimeraForca == 'PNV' ? "#008c7b":
+                e.features[0].properties.Nom_PrimeraForca == 'PRC' ? "#3236a8":e.features[0].properties.Nom_PrimeraForca == 'CUP' ? "#e8de74":e.features[0].properties.Nom_PrimeraForca == 'CP Melilla' ? "#0d6925":e.features[0].properties.Nom_PrimeraForca == 'Teruel Existe' ? "#0d6925":"#c6c6c6";
+                var colorsegundo = e.features[0].properties.Nom_SegonaForca == 'PSOE' ? "#cc001e": e.features[0].properties.Nom_SegonaForca == 'PP' ? "#026ca5": 
+                e.features[0].properties.Nom_SegonaForca == 'BNG' ? "#b5f3f7":e.features[0].properties.Nom_SegonaForca == 'JxCAT' ? "#023382":e.features[0].properties.Nom_SegonaForca == 'Bildu' ? "#95ab6a": 
+                e.features[0].properties.Nom_SegonaForca == 'ERC' ? "#e8c60b":e.features[0].properties.Nom_SegonaForca == 'cs' ? "#d57928":e.features[0].properties.Nom_SegonaForca == 'CC' ? "#e8de74":e.features[0].properties.Nom_SegonaForca == 'Podemos' ? "#8e244f":e.features[0].properties.Nom_SegonaForca == 'VOX' ? "#9cc628":e.features[0].properties.Nom_SegonaForca == 'MASPAIS' ? "#78e4b9":e.features[0].properties.Nom_SegonaForca == 'PNV' ? "#008c7b":
+                e.features[0].properties.Nom_SegonaForca == 'PRC' ? "#3236a8":e.features[0].properties.Nom_SegonaForca == 'CUP' ? "#e8de74":e.features[0].properties.Nom_SegonaForca == 'CP Melilla' ? "#0d6925":e.features[0].properties.Nom_SegonaForca == 'Teruel Existe' ? "#0d6925":"#c6c6c6";
+                 var colortercero = e.features[0].properties.Nom_TerceraForca == 'PSOE' ? "#cc001e": e.features[0].properties.Nom_TerceraForca == 'PP' ? "#026ca5": 
+                e.features[0].properties.Nom_TerceraForca == 'BNG' ? "#b5f3f7":e.features[0].properties.Nom_TerceraForca == 'JxCAT' ? "#023382":e.features[0].properties.Nom_TerceraForca == 'Bildu' ? "#95ab6a": 
+                e.features[0].properties.Nom_TerceraForca == 'ERC' ? "#e8c60b":e.features[0].properties.Nom_TerceraForca == 'cs' ? "#d57928":e.features[0].properties.Nom_TerceraForca == 'CC' ? "#e8de74":e.features[0].properties.Nom_TerceraForca == 'Podemos' ? "#8e244f":e.features[0].properties.Nom_TerceraForca == 'VOX' ? "#9cc628":e.features[0].properties.Nom_TerceraForca == 'MASPAIS' ? "#78e4b9":e.features[0].properties.Nom_TerceraForca == 'PNV' ? "#008c7b":
+                e.features[0].properties.Nom_TerceraForca == 'PRC' ? "#3236a8":e.features[0].properties.Nom_TerceraForca == 'CUP' ? "#e8de74":e.features[0].properties.Nom_TerceraForca == 'CP Melilla' ? "#0d6925":e.features[0].properties.Nom_TerceraForca == 'Teruel Existe' ? "#0d6925":"#c6c6c6";
+                var colorcuarto = e.features[0].properties.Nom_QuartaForca == 'PSOE' ? "#cc001e": e.features[0].properties.Nom_QuartaForca == 'PP' ? "#026ca5": 
+                e.features[0].properties.Nom_QuartaForca == 'BNG' ? "#b5f3f7":e.features[0].properties.Nom_QuartaForca == 'JxCAT' ? "#023382":e.features[0].properties.Nom_QuartaForca == 'Bildu' ? "#95ab6a": 
+                e.features[0].properties.Nom_QuartaForca == 'ERC' ? "#e8c60b":e.features[0].properties.Nom_QuartaForca == 'cs' ? "#d57928":e.features[0].properties.Nom_QuartaForca == 'CC' ? "#e8de74":e.features[0].properties.Nom_QuartaForca == 'Podemos' ? "#8e244f":e.features[0].properties.Nom_QuartaForca == 'VOX' ? "#9cc628":e.features[0].properties.Nom_QuartaForca == 'MASPAIS' ? "#78e4b9":e.features[0].properties.Nom_QuartaForca == 'PNV' ? "#008c7b":
+                e.features[0].properties.Nom_QuartaForca == 'PRC' ? "#3236a8":e.features[0].properties.Nom_QuartaForca == 'CUP' ? "#e8de74":e.features[0].properties.Nom_QuartaForca == 'CP Melilla' ? "#0d6925":e.features[0].properties.Nom_QuartaForca == 'Teruel Existe' ? "#0d6925":"#c6c6c6";
+                var colorquinto = e.features[0].properties.Nom_CinquenaForca == 'PSOE' ? "#cc001e": e.features[0].properties.Nom_CinquenaForca == 'PP' ? "#026ca5": 
+                e.features[0].properties.Nom_CinquenaForca == 'BNG' ? "#b5f3f7":e.features[0].properties.Nom_CinquenaForca == 'JxCAT' ? "#023382":e.features[0].properties.Nom_CinquenaForca == 'Bildu' ? "#95ab6a": 
+                e.features[0].properties.Nom_CinquenaForca == 'ERC' ? "#e8c60b":e.features[0].properties.Nom_CinquenaForca == 'cs' ? "#d57928":e.features[0].properties.Nom_CinquenaForca == 'CC' ? "#e8de74":e.features[0].properties.Nom_CinquenaForca == 'Podemos' ? "#8e244f":e.features[0].properties.Nom_CinquenaForca == 'VOX' ? "#9cc628":e.features[0].properties.Nom_CinquenaForca == 'MASPAIS' ? "#78e4b9":e.features[0].properties.Nom_CinquenaForca == 'PNV' ? "#008c7b":
+                e.features[0].properties.Nom_CinquenaForca == 'PRC' ? "#3236a8":e.features[0].properties.Nom_CinquenaForca == 'CUP' ? "#e8de74":e.features[0].properties.Nom_CinquenaForca == 'CP Melilla' ? "#0d6925":e.features[0].properties.Nom_CinquenaForca == 'Teruel Existe' ? "#0d6925":"#c6c6c6";
+                
+                
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var ganador = e.features[0].properties.Nom_PrimeraForca;
+        var segundo = e.features[0].properties.Nom_SegonaForca;
+        var tercero = e.features[0].properties.Nom_TerceraForca;
+        var cuarto = e.features[0].properties.Nom_QuartaForca;
+        var quinto = e.features[0].properties.Nom_CinquenaForca;
+        var municipio = e.features[0].properties.municipio_x;
+        var pganador = e.features[0].properties.Perc_PrimeraForca.toLocaleString();
+        var psegundo = e.features[0].properties.Perc_SegonaForca.toLocaleString();
+        var ptercero = e.features[0].properties.Perc_TerceraForca.toLocaleString();
+        var pcuarto = e.features[0].properties.Perc_QuartaForca.toLocaleString();
+        var pquinto = e.features[0].properties.Perc_CinquenaForca.toLocaleString();
+
+        
+         popup.setLngLat(e.lngLat)
+            .setHTML("<div style='color:black;font-size:12px;font-family: OpenSans-bold, Open Sans; text-transform: uppercase'><b>" + municipio + "</b></br></div><div style='font-family: Open Sans, Helvetica;'></div></div><div style='color:black;font-size:8px;font-family: OpenSans-bold, Open Sans;'><table style='border-collapse: collapse; font-family: Open Sans;width:100%'><tbody><tr><th></th><th style='text-align:right'><span style='font-size:10px'>Porcentaje %</span></th></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color:" + colorganador + "; margin-right: 4px;margin-bottom:-1px'></span><span style='font-size:15px; color:" + colorganador + "'><b>" + ganador + "</b></span></td><td style='text-align:right;padding-bottom:3px;padding-top:2px;font-size:15px;font-family: Open Sans; color:" + colorganador + "'<td style='text-align:right;padding-bottom:3px;padding-top:2px;font-size:12px;font-family: OpenSans-bold, Open Sans;'><b>" + pganador + "</b></span></td></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color:" + colorsegundo + "; margin-right: 4px;margin-bottom:-1px'></span><span style='font-size:12px;'>" + segundo + "</td><td style='text-align:right;padding-bottom:3px;padding-top:2px;font-size:12px;'>" + psegundo + "</td></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color:" + colortercero + "; margin-right: 4px;margin-bottom:-1px'></span><span style='font-size:12px;'>" + tercero + "</td><td style='text-align:right;padding-bottom:3px;padding-top:2px;font-size:12px;'>" + ptercero + "</td></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color:" + colorcuarto + "; margin-right: 4px;margin-bottom:-1px'></span><span style='font-size:12px;'>" + cuarto + "</td><td style='text-align:right;padding-bottom:3px;padding-top:2px;font-size:12px;'>" + pcuarto + "</td></tr><tr style='border-bottom: 1px solid #ddd;'><td style='padding-bottom:2px;padding-top:2px'><span style='display: inline-block;width: 10px; height: 10px; background-color:" + colorquinto + "; margin-right: 4px;margin-bottom:-1px'></span><span style='font-size:12px;'>" + quinto + "</td><td style='text-align:right;padding-bottom:3px;padding-top:2px;font-size:12px;'>" + pquinto +"</div></div>" )
+            .addTo(map);
+  });   
+        // Change the cursor style as a UI indicator.
+        
+        // Display a popup with the name of the county
+  map.on('mouseleave', 'tiles-fills', function() {
+      map.getCanvas().style.cursor = '';
+        popup.remove();
+        if (hoveredStateId) {          
+          map.setFeatureState({ source: 'resultados', 
+                                sourceLayer: 'forcesGAL2020',
+                                id: hoveredStateId}, { hover: false});
+        }
+        hoveredStateId = null;
+      });
+});   
+</script>
+ 
+
+   
+	</body>
+</html>
