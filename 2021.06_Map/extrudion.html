@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>¿De qué vive tu vecino?</title>
+<style>
+     @import url('https://fonts.googleapis.com/css?family=Open+Sans:200,400,600,700,800');
+    *{margin: 0; padding: 0;}
+#map {
+    width: 100%;
+    height: 550px;
+
+}
+
+
+</style>
+<script src='https://cdn.rawgit.com/duroty/responsive/master/app.embed.js'></script>
+<script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.0.0/mapbox-gl-geocoder.min.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.0.0/mapbox-gl-geocoder.css' type='text/css' />
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+<script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.css' rel='stylesheet' />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:200,400,600,700&display=swap" rel="stylesheet"> <!-- CAMBIAR3 -->
+
+<link rel="stylesheet" type="text/css" href="style.css">
+
+<body>
+	<div id="cabecera">
+        <nav id="menuPartidos">
+        </nav>
+        <div id='geocoder' class='geocoder'></div>
+
+
+<div id="map"></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoibGF1cjA1IiwiYSI6ImNpbmtmM2FjazAwODF2eG0yNjhteTcxdHIifQ.l7uzjVe2b1L8dHh_Z9JjoQ';
+var map = new mapboxgl.Map({
+container: 'map',
+style: 'mapbox://styles/laur05/ckpp830y0012o17msqixj5sna', 
+center:  [-3.7, 39.5],
+zoom: 6,
+minZoom: 4,
+maxZoom: 8.5,
+pitch: 50,
+//bearing: 20,
+//antialias: true,
+attributionControl: false,
+
+});
+
+var hoveredStateId =  null;
+var searched_lngLat = null;
+ 
+map.on('load', function () {
+
+map.addSource("resultados", {
+    type: 'vector',
+    url: 'mapbox://laur05.0p0837j6',
+});
+map.addLayer({
+'id': '1k-extrusion',
+'type': 'fill-extrusion',
+'source': 'resultados',
+'source-layer': 'output_1k',
+'filter': ['>', 'TOT_P_2018', 0],
+
+'paint': {
+// Get the `fill-extrusion-color` from the source `color` property.
+'fill-extrusion-color': ["interpolate", ["linear", 1],
+                        ["get", "TOT_P_2018"],
+                        0, "#d6d6d6",
+                        12000, "#a6611a",
+                        20000, "#a6611a",
+                        20001, "#dfc27d",
+                        30000, "#dfc27d",
+                        30001, "#80cdc1",
+                        40000, "#80cdc1",
+                        40001, "#018571",
+                        50000, "#018571",
+                    ],
+ 'fill-extrusion-height': ['get', 'TOT_P_2018'],
+ 'fill-extrusion-base': ['get', '0'],
+ 'fill-extrusion-opacity': 0.7
+}}, 'settlement-minor-label');
+
+map.addLayer({
+'id': '5k-extrusion',
+'type': 'fill-extrusion',
+'source': 'resultados',
+'source-layer': 'output_5k',
+'filter': ['>', 'TOT_P_2018', 0],
+'paint': {
+// Get the `fill-extrusion-color` from the source `color` property.
+'fill-extrusion-color': ["interpolate", ["linear", 1],
+                        ["get", "TOT_P_2018"],
+                        0, "#d6d6d6",
+                        12000, "#a6611a",
+                        20000, "#a6611a",
+                        20001, "#dfc27d",
+                        30000, "#dfc27d",
+                        30001, "#80cdc1",
+                        40000, "#80cdc1",
+                        40001, "#018571",
+                        50000, "#018571",
+                    ],
+ 'fill-extrusion-height': ['get', 'TOT_P_2018'],
+ 'fill-extrusion-base': ['get', '0'],
+ 'fill-extrusion-opacity': 0.7
+}},'settlement-minor-label');
+
+map.addLayer({
+'id': '250k-extrusion',
+'type': 'fill-extrusion',
+'source': 'resultados',
+'source-layer': 'output_250m',
+'filter': ['>', 'TOT_P_2018', 0],
+'paint': {
+// Get the `fill-extrusion-color` from the source `color` property.
+'fill-extrusion-color': ["interpolate", ["linear", 1],
+                        ["get", "TOT_P_2018"],
+                        0, "#d6d6d6",
+                        12000, "#a6611a",
+                        20000, "#a6611a",
+                        20001, "#dfc27d",
+                        30000, "#dfc27d",
+                        30001, "#80cdc1",
+                        40000, "#80cdc1",
+                        40001, "#018571",
+                        50000, "#018571",
+                    ],
+ 'fill-extrusion-height': ['get', 'TOT_P_2018'],
+ 'fill-extrusion-base': ['get', '0'],
+ 'fill-extrusion-opacity': 0.7
+}},'settlement-major-label');
+
+
+
+var nav = new mapboxgl.NavigationControl( {showCompass:false});
+map.addControl(nav, 'top-left');
+
+// disable map zoom when using scroll
+map.scrollZoom.disable();
+
+
+
+var geocoder = new MapboxGeocoder({
+countries: 'es',
+accessToken: mapboxgl.accessToken,
+mapboxgl: mapboxgl,
+types: 'place',
+placeholder: 'Busca tu municipio',
+marker: false,
+zoom: 8,
+});
+
+document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+
+
+});
+var popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+}); 
+
+map.on('mousemove', '250k-extrusions', function(e) {
+    if (e.features.length > 0) {
+          if (hoveredStateId) {          
+            map.setFeatureState({ source: 'resultados', 
+                                  sourceLayer: 'output_250m',
+                                  id: hoveredStateId}, { hover: false});
+          }
+          hoveredStateId = e.features[0].id;
+          map.setFeatureState({ source: 'resultados', 
+                              sourceLayer: 'output_250m',
+                              id: hoveredStateId}, { hover: true});
+        }
+
+       map.getCanvas().style.cursor = 'pointer';
+
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var renta = e.features[0].properties.TOT_P_2018.toLocaleString('es-ES');
+
+         popup.setLngLat(e.lngLat)
+         .setHTML(renta)
+         .addTo(map);
+  });
+</script>
+ 
+</body>
+</html>
