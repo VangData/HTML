@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Slider</title>
+    <style>
+
+    
+    </style>
+
+    <!-- Mapbox -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.0.0/mapbox-gl-geocoder.min.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.0.0/mapbox-gl-geocoder.css' type='text/css' />
+    <!-- CSS style -->
+    <link href='style.css' rel='stylesheet' type="text/css"/>
+    <!-- Range input css js -->
+
+
+
+</head>
+<body>
+    <div id='map' style='width: 100%; height: 600px;'></div>
+    <div class='container'>
+    
+        <div class="session" id="sliderbar">
+          <input
+            id="slider"
+            class="styled-slider slider-progress"
+            type="range"
+            min="1940"
+            max="2021"
+            step="1"
+            value="20"
+          />
+          <h3><label id="active-hour">1950</label></h3>
+        </div>
+        <div id='geocoder' class='geocoder'></div>
+
+        </div>
+
+  
+        <script src="range-input.js"></script>
+
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoibGF1cjA1IiwiYSI6ImNpbmtmM2FjazAwODF2eG0yNjhteTcxdHIifQ.l7uzjVe2b1L8dHh_Z9JjoQ';
+    
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/laur05/ckqjhotee2tav17nzgyqyqktj', 
+        center:  { lon: -3.71266, lat: 40.51782 }, // starting position [lng, lat]
+        zoom: 9,// starting zoom
+        minZoom: 2,
+        maxZoom: 15,
+        attributionControl: false,
+    });
+
+    var hoveredStateId =  null;
+    var searched_lngLat = null;
+
+    var popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+    }); 
+
+    var nav = new mapboxgl.NavigationControl( {showCompass:false});
+    map.addControl(nav, 'bottom-right');
+
+    // disable map zoom when using scroll
+    map.scrollZoom.disable();
+    
+
+
+    map.on('load', function () {
+
+    map.addSource("Edificios", {
+        type: 'vector',
+        url: 'mapbox://laur05.8tzb65ug',
+    });
+
+    map.addLayer({
+        'id': 'Madrid',
+        'type': 'fill',
+        'source': 'Edificios',
+        'source-layer': 'mad1',
+        'filter': ['<', ['number', ['get', 'beginning']], 2021],
+        'paint': {
+        'fill-color': ["interpolate", ["linear", 100], ["get", "beginning"],
+            1900, '#ffa600',
+            1949, '#ffa600',
+            1950, '#ff7c43',
+            1959, '#ff7c43',
+            1960, '#f95d6a',
+            1969, '#f95d6a',
+            1970, '#d45087',
+            1979, '#d45087',
+            1980, '#a05195',
+            1989, '#a05195',
+            1990, '#665191',
+            1999, '#665191',
+            2000, '#2f4b7c',
+            2009, '#2f4b7c',
+            2010, '#003f5c',
+            2019, '#003f5c',
+            2020, '#00202e'],
+        'fill-opacity': 1,
+            }},
+        'road-label');
+    
+       
+
+    var geocoder = new MapboxGeocoder({
+    countries: 'es',
+    accessToken: mapboxgl.accessToken,
+    mapboxgl: mapboxgl,
+    language: 'es',
+    types: 'neighborhood, address',
+    placeholder: 'BUSCA TU CALLE',
+    zoom: 16,
+    proximity: {
+    longitude: -3.71266,
+    latitude: 40.51782
+  } 
+    });
+
+ 
+  
+
+
+     // update hour filter when the slider is dragged
+     document
+          .getElementById('slider')
+          .addEventListener('input', function (e) {
+            var year = parseInt(e.target.value);
+            // update the map
+            map.setFilter('Madrid', [
+              '<',
+              ['number', ['get', 'beginning']],
+              year
+            ]);
+
+
+
+            // update text in the UI
+            document.getElementById('active-hour').innerText = year;
+        });
+
+        document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+
+    
+        map.on('mousemove', 'Madrid', function(e) {
+    if (e.features.length > 0) {
+          if (hoveredStateId) {          
+            map.setFeatureState({ source: 'Edificios', 
+                                  sourceLayer: 'mad1',
+                                  id: hoveredStateId}, { hover: false});
+          }
+          hoveredStateId = e.features[0].id;
+          map.setFeatureState({ source: 'Edificios', 
+                              sourceLayer: 'mad1',
+                              id: hoveredStateId}, { hover: true});
+        }
+
+       map.getCanvas().style.cursor = 'pointer';
+
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var ciudad = e.features[0].properties.ciudad;
+        var viviendas = e.features[0].properties.numberOfDwellings.toLocaleString('es-ES');
+        var inicio = e.features[0].properties.beginning.toLocaleString('es-ES');
+
+         popup.setLngLat(e.lngLat)
+         .setHTML("<div style='color:black;font-size:14px;text-align:center;font-family: OpenSans, Open Sans;padding-bottom:3px'><b>" + ciudad + "</b></div><hr><div style='padding-top: 4px; font-size: 14px;font-family: Open Sans;text-align: center;'>" + inicio + "</b></br></span></div>")
+         .addTo(map);
+  });   
+
+  map.on('mouseleave', 'Madrid', function() {
+      map.getCanvas().style.cursor = '';
+        popup.remove();
+        if (hoveredStateId) {          
+          map.setFeatureState({ source: 'Edificios', 
+                                sourceLayer: 'mad1',    
+                                id: hoveredStateId}, { hover: false});
+        }
+        hoveredStateId = null;
+      });
+});
+
+</script>
+
+</body>
+</html>
